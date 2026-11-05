@@ -65,7 +65,7 @@ export default async function Home() {
               <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 lg:text-lg">
                 <b className="font-medium tabular-nums text-mint">{n(meta.n_total)} registros</b> da SSP-SP de furto, roubo e tráfico, de {periodo}, agrupados em <b className="font-medium tabular-nums text-mint">{meta.n_areas} áreas de atenção</b>. Cada área tem um índice de 0 a 100, com o cálculo à vista.
               </p>
-              <a href="#video" className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
+              <a href="#video" className="mt-5 hidden items-center lg:inline-flex gap-2.5 rounded-full border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-mint text-forest"><svg aria-hidden="true" viewBox="0 0 24 24" className="ml-0.5 h-3.5 w-3.5" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
                 Assistir ao vídeo de apresentação
               </a>
