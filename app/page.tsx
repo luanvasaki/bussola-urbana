@@ -55,12 +55,14 @@ export default async function Home() {
           </div>
         </header>
 
-        {/* Mapa de borda a borda, com o texto por cima à esquerda */}
-        <figure className="relative h-[78svh] min-h-[460px] lg:h-auto lg:flex-1">
-          <MapaDados ocorrencias={ocorrencias} areas={areas} ano={meta.periodo_fim.slice(0, 4)} />
+        {/* Computador: mapa de borda a borda, com o texto por cima à esquerda. Celular: texto acima e mapa inteiro logo abaixo. */}
+        <figure className="flex flex-col lg:relative lg:block lg:flex-1">
+          <div className="relative h-[68svh] min-h-[400px] overflow-hidden lg:absolute lg:inset-0 lg:h-auto lg:min-h-0 lg:overflow-visible">
+            <MapaDados ocorrencias={ocorrencias} areas={areas} ano={meta.periodo_fim.slice(0, 4)} />
+          </div>
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 hidden w-[46%] bg-gradient-to-r from-forest via-forest/80 to-transparent lg:block" />
-          <div className="relative z-10 flex h-full flex-col justify-between px-6 py-8 lg:max-w-[40rem] lg:px-10 lg:py-12">
-            <div className="rounded-2xl bg-forest/70 p-4 backdrop-blur-sm lg:bg-transparent lg:p-0 lg:backdrop-blur-0">
+          <div className="relative z-10 order-first px-6 pb-2 pt-7 lg:order-none lg:flex lg:h-full lg:max-w-[40rem] lg:flex-col lg:justify-between lg:px-10 lg:py-12">
+            <div>
               <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-bold leading-[1.04] tracking-[-0.025em]">Onde as ocorrências se concentram em Sorocaba</h1>
               <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 lg:text-lg">
                 <b className="font-medium tabular-nums text-mint">{n(meta.n_total)} registros</b> da SSP-SP de furto, roubo e tráfico, de {periodo}, agrupados em <b className="font-medium tabular-nums text-mint">{meta.n_areas} áreas de atenção</b>. Cada área tem um índice de 0 a 100, com o cálculo à vista.
