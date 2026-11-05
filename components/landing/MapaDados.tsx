@@ -5,6 +5,7 @@ import MapaVivo, { type Alvo } from "./MapaVivo";
 /** Mapa-assinatura da página de entrada: SVG estático renderizado no servidor a partir dos dados reais. */
 const W = 1000;
 const CELULA = 7;
+const RUAS = { latN: -23.28, latS: -23.72, lonO: -47.8, lonL: -47.1 }; // recorte usado ao gerar public/ruas-sorocaba.svg
 
 function pct(v: number[], p: number) {
   const s = [...v].sort((a, b) => a - b);
@@ -48,11 +49,21 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
   for (let lon = Math.ceil((minLon - 0.5) / 0.02) * 0.02; lon <= maxLon + 0.5; lon += 0.02) { const [x] = xy(minLat, lon); grade.push({ d: `M ${x.toFixed(1)} ${-2 * H} V ${3 * H}` }); }
   for (let lat = Math.ceil((minLat - 0.3) / 0.02) * 0.02; lat <= maxLat + 0.3; lat += 0.02) { const [, y] = xy(lat, minLon); grade.push({ d: `M ${-2 * W} ${y.toFixed(1)} H ${3 * W}` }); }
 
+  // Ruas de Sorocaba (OpenStreetMap) desenhadas bem fracas sob os pontos: public/ruas-sorocaba.svg cobre o recorte RUAS
+  const [rx, ry] = xy(RUAS.latN, RUAS.lonO), [rx2, ry2] = xy(RUAS.latS, RUAS.lonL);
+
   return (
     <>
     <svg viewBox={`0 0 ${W} ${H}`} overflow="visible" className="absolute inset-0 h-full w-full" role="img"
       aria-label={`Mapa de Sorocaba com ${ocorrencias.length.toLocaleString("pt-BR")} ocorrências oficiais e ${areas.length} áreas de atenção. A agulha percorre as áreas de alta prioridade, começando por ${topo.nome}, índice ${topo.indice}.`}>
       <g aria-hidden="true">
+        <defs>
+          <radialGradient id="ruas-fade" gradientUnits="userSpaceOnUse" cx={W / 2} cy={H / 2} r={W}>
+            <stop offset="0.45" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" />
+          </radialGradient>
+          <mask id="ruas-mask" maskUnits="userSpaceOnUse" x={rx} y={ry} width={rx2 - rx} height={ry2 - ry}><rect x={rx} y={ry} width={rx2 - rx} height={ry2 - ry} fill="url(#ruas-fade)" /></mask>
+        </defs>
+        <image href="/ruas-sorocaba.svg" x={rx} y={ry} width={rx2 - rx} height={ry2 - ry} preserveAspectRatio="none" opacity="0.13" mask="url(#ruas-mask)" />
         <path d={grade.map((g) => g.d).join(" ")} stroke="#eefbf3" strokeOpacity="0.06" strokeWidth="1" fill="none" />
         {pontos.map((p, i) => (
           <circle key={i} cx={p.x} cy={p.y} r={Math.min(1.1 + Math.sqrt(p.n) * 0.75, 4.6)} fill="#a7e8c4" opacity={Math.min(0.28 + p.n * 0.06, 0.95)} />

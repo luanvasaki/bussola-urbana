@@ -75,7 +75,7 @@ export default async function Home() {
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />{altas} áreas de alta prioridade</span>
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média prioridade</span>
               </span>
-              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP. O pulso repete os registros em ordem; não é tempo real.</span>
+              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP. O pulso repete os registros em ordem; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
             </figcaption>
           </div>
         </figure>
@@ -194,7 +194,7 @@ export default async function Home() {
           <div><p className="font-semibold text-mint">Equipe</p><ul className="mt-1 space-y-0.5"><li>Luan Vasaki Morais Guimarães</li><li>Igor Kendi Grigoleto Takeyama</li><li>Yasmin Alves Braga Carvalho</li><li>Hudson Albuquerque Machado</li></ul></div>
           <p><span className="font-semibold text-mint">Orientação</span><br />Profa. Ma. Brenda Medina de Oliveira</p>
           <div><p className="font-semibold text-mint">Tecnologia</p><ul className="mt-1 space-y-0.5"><li>Next.js e React</li><li>Supabase com PostGIS</li><li>MapLibre e OpenStreetMap</li><li>Python com scikit-learn</li><li>Vercel</li></ul><a href="https://github.com/luanvasaki/bussola-urbana" className="mt-2 inline-block underline decoration-mint/40 underline-offset-4 hover:decoration-mint">Código no GitHub</a></div>
-          <p><span className="font-semibold text-mint">Dados</span><br />{meta.fonte}. Relatos, vistorias e ordens criados para a apresentação aparecem marcados como de exemplo.</p>
+          <p><span className="font-semibold text-mint">Dados</span><br />{meta.fonte}. Relatos, vistorias e ordens criados para a apresentação aparecem marcados como de exemplo. Ruas do mapa: © colaboradores do OpenStreetMap.</p>
         </div>
         <p className="mx-auto max-w-7xl px-6 pb-10 text-xs text-mint/65 lg:px-10">Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, Sorocaba, 2026. Alinhado aos ODS 11 e 16.</p>
       </footer>
