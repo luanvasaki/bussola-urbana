@@ -39,7 +39,7 @@ export default function Painel({ areas, pontos, relatos, n_total }: { areas: Are
             </div>
           </div>
           <MapView className="h-[460px]" areas={areas} pontos={pontos} relatos={eixo === "Todos" ? rel : rel} heat={heat} selectedId={sel} onSelect={setSel} />
-          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-red-700" /><b>Alta</b> (≥ 70)</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-600" /><b>Média</b> (50–69)</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-700" /><b>Baixa</b> (&lt; 50)</span><span className="text-forest/60">{areas.length} áreas no mapa</span></div>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs"><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-red-700" /><b>Alta</b> (≥ 70)</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-amber-600" /><b>Média</b> (45–69)</span><span><i className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-700" /><b>Baixa</b> (&lt; 45)</span><span className="text-forest/60">{areas.length} áreas no mapa</span></div>
         </section>
         <section className="card p-4">
           <div className="flex items-baseline justify-between"><div><h2 className="text-lg font-bold">Zonas Prioritárias</h2><p className="text-xs text-forest/60">Ordenação por Índice de Atenção</p></div><span className="rounded-md bg-mint px-2 py-1 text-xs font-bold">Top {top.length}</span></div>

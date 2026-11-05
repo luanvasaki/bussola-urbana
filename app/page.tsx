@@ -128,6 +128,31 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Validação com usuários (relatório da AF, seção 9) */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
+        <Revela>
+          <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">Testado com quem vai usar</h2>
+          <p className="r mt-4 max-w-[60ch] text-lg leading-relaxed text-forest/75" style={{ ["--i" as string]: 1 }}>Três entrevistas, cada uma seguida de um teste com três tarefas no protótipo. Dois dos três pediram a mesma coisa, e o pedido virou parte do app.</p>
+        </Revela>
+        <Revela as="ol" className="mt-12 grid gap-8 md:grid-cols-3">
+          {[
+            { d: "29 de outubro", q: "Decisor", p: "Coordenador operacional de um batalhão da PM", v: "Achou a área de maior atenção em segundos. Para usar na sala de operações, pediu dados atualizados de hora em hora e integração com o Infocrim." },
+            { d: "30 de outubro", q: "Agente de campo", p: "Policial militar da Ronda Patrulha", v: "Registrou a vistoria em cerca de 30 segundos. Hoje relata problemas da rua e nunca sabe se o pedido andou, por isso pediu um protocolo." },
+            { d: "2 de novembro", q: "Munícipe", p: "Estudante que circula a pé e de ônibus", v: "Enviou o relato anônimo em cerca de 45 segundos. Pediu protocolo e preferiu um site a um aplicativo que ocupe memória do celular." },
+          ].map((e, i) => (
+            <li key={e.q} className="r rounded-2xl bg-white p-6 ring-1 ring-forest/10" style={{ ["--i" as string]: i }}>
+              <span className="text-sm text-forest/55">{e.d}</span>
+              <h3 className="mt-2 font-display text-xl font-bold">{e.q}</h3>
+              <p className="text-sm text-forest/60">{e.p}</p>
+              <p className="mt-3 leading-relaxed text-forest/80">{e.v}</p>
+            </li>
+          ))}
+        </Revela>
+        <Revela>
+          <p className="r mt-10 max-w-[68ch] border-l-4 border-forest-600 pl-5 leading-relaxed text-forest/85">O que mudou: o relato de campo passou a gerar um <b className="font-semibold text-forest">número de protocolo com acompanhamento</b>, e o acesso de campo funciona pelo navegador, sem instalar nada. As entrevistas são exploratórias, com participantes escolhidos por conveniência, e indicam a direção do produto, sem generalização.</p>
+        </Revela>
+      </section>
+
       {/* Limites */}
       <section className="bg-mint-100">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:px-10 lg:py-24">
@@ -150,12 +175,13 @@ export default async function Home() {
       </section>
 
       <footer className="bg-forest text-mint/70">
-        <div className="mx-auto grid max-w-7xl gap-6 px-6 py-12 text-sm sm:grid-cols-3 lg:px-10">
-          <p><span className="font-semibold text-mint">Equipe</span><br />Luan, Igor, Yasmin e Hudson. Esquema de dados inicial de Hudson Albuquerque Machado.</p>
-          <p><span className="font-semibold text-mint">Tecnologia</span><br />Next.js, Supabase com PostGIS, MapLibre e Python com scikit-learn.</p>
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
+          <p><span className="font-semibold text-mint">Equipe</span><br />Luan Vasaki Morais Guimarães, gestão do projeto<br />Igor Kendi Grigoleto Takeyama, UI/UX<br />Yasmin Alves Braga Carvalho, pesquisa e documentação<br />Hudson Albuquerque Machado, banco de dados e repositório</p>
+          <p><span className="font-semibold text-mint">Orientação</span><br />Profa. Ma. Brenda Medina de Oliveira</p>
+          <p><span className="font-semibold text-mint">Tecnologia</span><br />Next.js, Supabase com PostGIS, MapLibre e Python com scikit-learn. <a href="https://github.com/luanvasaki/bussola-urbana" className="underline decoration-mint/40 underline-offset-4 hover:decoration-mint">Código no GitHub</a>.</p>
           <p><span className="font-semibold text-mint">Dados</span><br />{meta.fonte}. Relatos, vistorias e ordens de exemplo aparecem marcados como demonstrativos.</p>
         </div>
-        <p className="mx-auto max-w-7xl px-6 pb-10 text-xs text-mint/45 lg:px-10">Projeto UPX I, Análise e Desenvolvimento de Sistemas, Facens, 2026.</p>
+        <p className="mx-auto max-w-7xl px-6 pb-10 text-xs text-mint/45 lg:px-10">Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, Sorocaba, 2026. Alinhado aos ODS 11 e 16.</p>
       </footer>
     </main>
   );

@@ -1,7 +1,8 @@
 import type { Area } from "./types";
 export const FAIXA: Record<string, string> = { "De madrugada": "0h–6h", "Pela manhã": "6h–12h", "A tarde": "12h–18h", "A noite": "18h–24h" };
 export const PERIODO_CURTO: Record<string, string> = { "De madrugada": "madrugada", "Pela manhã": "pela manhã", "A tarde": "à tarde", "A noite": "à noite" };
-export const prioridade = (i: number) => (i >= 70 ? "Alta" : i >= 50 ? "Média" : "Baixa") as "Alta" | "Média" | "Baixa";
+// Faixas documentadas no relatório e no artigo: alta ≥ 70, média 45–69, baixa < 45.
+export const prioridade = (i: number) => (i >= 70 ? "Alta" : i >= 45 ? "Média" : "Baixa") as "Alta" | "Média" | "Baixa";
 export const COR = { Alta: "#b91c1c", Média: "#d97706", Baixa: "#1f6b4e" } as const;
 
 export const nomeBairro = (s: string) =>

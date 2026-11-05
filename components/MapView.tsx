@@ -28,7 +28,10 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
     m.on("click", (e) => cb.current.onPick?.({ lat: +e.lngLat.lat.toFixed(6), lon: +e.lngLat.lng.toFixed(6) }));
     if (cb.current.onPick) m.getCanvas().style.cursor = "crosshair";
     map.current = m;
-    return () => m.remove();
+    // O MapLibre só acompanha o redimensionamento da janela; isto cobre mudanças no tamanho do contêiner.
+    const ro = new ResizeObserver(() => m.resize());
+    ro.observe(el.current!);
+    return () => { ro.disconnect(); m.remove(); };
   }, []);
 
   // mapa de calor das ocorrências (dado oficial)
