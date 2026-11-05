@@ -1,10 +1,10 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 
-// Mesmo par de fontes da página de apresentação em todo o app
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--f-display" });
-const texto = Instrument_Sans({ subsets: ["latin"], variable: "--f-texto" });
+// Serifada encorpada nos títulos e números grandes; Inter no texto corrido. Mesmo par em todo o app.
+const display = Fraunces({ subsets: ["latin"], variable: "--f-display", axes: ["opsz"] });
+const texto = Inter({ subsets: ["latin"], variable: "--f-texto" });
 
 const descricao = "Onde as ocorrências se concentram em Sorocaba: áreas de atenção com dados abertos da SSP-SP e relato anônimo de problemas na rua. Projeto acadêmico UPX I, Facens.";
 export const metadata: Metadata = {

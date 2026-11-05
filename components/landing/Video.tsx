@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function Video({ id, titulo }: { id: string; titulo: string }) {
   const [tocando, setTocando] = useState(false);
   return (
-    <div className="relative aspect-video overflow-hidden rounded-xl bg-forest-800 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
+    <div className="relative aspect-video overflow-hidden rounded-md bg-forest-800 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
       {tocando ? (
         <iframe
           src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}

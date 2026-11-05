@@ -63,11 +63,11 @@ export default async function Home() {
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 hidden w-[46%] bg-gradient-to-r from-forest via-forest/80 to-transparent lg:block" />
           <div className="relative z-10 order-first px-6 pb-2 pt-7 lg:order-none lg:flex lg:h-full lg:max-w-[40rem] lg:flex-col lg:justify-between lg:px-10 lg:py-12">
             <div>
-              <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-bold leading-[1.04] tracking-[-0.025em]">Onde as ocorrências se concentram em Sorocaba</h1>
+              <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Onde as ocorrências se concentram em Sorocaba</h1>
               <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 lg:text-lg">
                 <b className="font-medium tabular-nums text-mint">{n(meta.n_total)} registros</b> da SSP-SP de furto, roubo e tráfico, de {periodo}, agrupados em <b className="font-medium tabular-nums text-mint">{meta.n_areas} áreas de atenção</b>. Cada área tem um índice de 0 a 100, com o cálculo à vista.
               </p>
-              <a href="#video" className="mt-5 hidden items-center lg:inline-flex gap-2.5 rounded-full border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
+              <a href="#video" className="mt-5 hidden items-center lg:inline-flex gap-2.5 rounded-md border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-mint text-forest"><svg aria-hidden="true" viewBox="0 0 24 24" className="ml-0.5 h-3.5 w-3.5" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
                 Assistir ao vídeo de apresentação
               </a>
@@ -88,7 +88,7 @@ export default async function Home() {
       {/* Como funciona: a linha é desenhada etapa por etapa, na ordem do fluxo de dados */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
         <Revela>
-          <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">Do boletim de ocorrência à ordem de serviço</h2>
+          <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Do boletim de ocorrência à ordem de serviço</h2>
         </Revela>
         <Revela as="ol" className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {etapas.map((e, i) => (
@@ -107,12 +107,12 @@ export default async function Home() {
       <section className="overflow-hidden bg-forest text-mint">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
           <Revela>
-            <h2 className="r max-w-[18ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">Duas formas de entrar, um só fluxo</h2>
+            <h2 className="r max-w-[18ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Duas formas de entrar, um só fluxo</h2>
             <p className="r mt-4 max-w-[56ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>Quem está na rua aponta o problema. Quem decide vê o problema no mapa, ao lado do índice da área, e transforma em vistoria e ordem de serviço.</p>
           </Revela>
           <Revela className="mt-14 grid items-end gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] lg:gap-16">
             <div className="r r-esq">
-              <div className="overflow-hidden rounded-xl bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
+              <div className="overflow-hidden rounded-md bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
                 <Image src="/telas/gestor-painel-2.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Gestor</h3>
@@ -134,7 +134,7 @@ export default async function Home() {
       {/* Validação com usuários (relatório da AF, seção 9) */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
         <Revela>
-          <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">Testado com quem vai usar</h2>
+          <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Testado com quem vai usar</h2>
           <p className="r mt-4 max-w-[60ch] text-lg leading-relaxed text-forest/75" style={{ ["--i" as string]: 1 }}>Três entrevistas, cada uma seguida de um teste com três tarefas no protótipo. Dois dos três pediram a mesma coisa, e o pedido virou parte do app.</p>
         </Revela>
         <Revela as="ol" className="mt-12 grid gap-8 md:grid-cols-3">
@@ -143,7 +143,7 @@ export default async function Home() {
             { d: "30 de outubro", q: "Agente de campo", p: "Policial militar da Ronda Patrulha", v: "Registrou a vistoria em cerca de 30 segundos. Hoje relata problemas da rua e nunca sabe se o pedido andou, por isso pediu um protocolo." },
             { d: "2 de novembro", q: "Munícipe", p: "Estudante que circula a pé e de ônibus", v: "Enviou o relato anônimo em cerca de 45 segundos. Pediu protocolo e preferiu um site a um aplicativo que ocupe memória do celular." },
           ].map((e, i) => (
-            <li key={e.q} className="r rounded-2xl bg-white p-6 ring-1 ring-forest/10" style={{ ["--i" as string]: i }}>
+            <li key={e.q} className="r rounded-md bg-white p-6 ring-1 ring-forest/10" style={{ ["--i" as string]: i }}>
               <span className="text-sm text-forest/70">{e.d}</span>
               <h3 className="mt-2 font-display text-xl font-bold">{e.q}</h3>
               <p className="text-sm text-forest/70">{e.p}</p>
@@ -160,7 +160,7 @@ export default async function Home() {
       <section id="video" className="scroll-mt-6 bg-forest text-mint">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:px-10 lg:py-28">
           <Revela>
-            <h2 className="r max-w-[14ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">A equipe apresenta a Bússola</h2>
+            <h2 className="r max-w-[14ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">A equipe apresenta a Bússola</h2>
             <p className="r mt-4 max-w-[40ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>O vídeo pitch do projeto: o problema, a solução e como chegamos até aqui.</p>
             <a href="https://www.youtube.com/watch?v=fL9kssxu_SM" target="_blank" rel="noopener noreferrer" className="r mt-6 inline-block text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
           </Revela>
@@ -174,7 +174,7 @@ export default async function Home() {
       <section className="bg-mint-100">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:px-10 lg:py-24">
           <Revela>
-            <h2 className="r max-w-[16ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">O que a Bússola não faz</h2>
+            <h2 className="r max-w-[16ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">O que a Bússola não faz</h2>
           </Revela>
           <div className="space-y-8">
             <Revela as="dl" className="grid gap-6 sm:grid-cols-3">

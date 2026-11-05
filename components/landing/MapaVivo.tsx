@@ -98,7 +98,7 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
           <line x1={cx} y1={cy} x2={alvo.x} y2={alvo.y} stroke="#eefbf3" strokeOpacity="0.55" strokeWidth="1.6" strokeDasharray="5 6" />
           <circle cx={alvo.x} cy={alvo.y} r="20" fill="none" stroke="#eefbf3" strokeWidth="2.5" />
           <g textAnchor={esq ? "end" : "start"} paintOrder="stroke" stroke="#0d2b20" strokeWidth="8" strokeLinejoin="round">
-            <text x={tx} y={ty1} fill="#eefbf3" fontSize="32" fontWeight="700">{alvo.nome}</text>
+            <text x={tx} y={ty1} fill="#eefbf3" fontSize="34" fontWeight="600" fontFamily="var(--f-display), Georgia, serif">{alvo.nome}</text>
             <text x={tx} y={ty2} fill="#a7e8c4" fontSize="23">Índice de Atenção {alvo.indice} de 100</text>
           </g>
         </g>

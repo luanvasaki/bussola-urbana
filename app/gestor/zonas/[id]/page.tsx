@@ -23,10 +23,10 @@ export default async function Zona({ params }: { params: { id: string } }) {
       <div className="space-y-4">
         <section className="card p-4"><MapaZona area={a} pontos={pts} relatos={relatos} /></section>
         <section className="card p-4"><h2 className="font-bold">Fluxo de trabalho</h2>
-          <ol className="mt-3 grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">{WORKFLOW.map((w, i) => <li key={w} className={`rounded-xl px-2 py-2 font-semibold ${i <= wf ? "bg-forest text-white" : "bg-mint text-forest/70"}`}>{w}</li>)}</ol></section>
+          <ol className="mt-3 grid grid-cols-2 gap-2 text-center text-xs sm:grid-cols-4">{WORKFLOW.map((w, i) => <li key={w} className={`rounded-md px-2 py-2 font-semibold ${i <= wf ? "bg-forest text-white" : "bg-mint text-forest/70"}`}>{w}</li>)}</ol></section>
         <section className="card p-4"><h2 className="font-bold">Vistorias e ordens de zeladoria</h2>
           {vist.length === 0 ? <p className="mt-2 text-sm text-forest/70">Nenhuma vistoria ainda. <Link className="underline" href="/gestor/intervencoes">Registrar em Intervenções</Link>.</p> :
-            <ul className="mt-2 space-y-3 text-sm">{vist.map((v) => <li key={v.id} className="rounded-xl bg-mint/60 p-3"><div className="font-semibold">{v.problema}</div><div className="text-xs text-forest/70">{v.fiscal}, {data(v.criado_em)}</div>{v.observacoes && <p className="mt-1">{v.observacoes}</p>}
+            <ul className="mt-2 space-y-3 text-sm">{vist.map((v) => <li key={v.id} className="rounded-md bg-mint/60 p-3"><div className="font-semibold">{v.problema}</div><div className="text-xs text-forest/70">{v.fiscal}, {data(v.criado_em)}</div>{v.observacoes && <p className="mt-1">{v.observacoes}</p>}
               {ordens.filter((o) => o.vistoria_id === v.id).map((o) => <div key={o.id} className="mt-2 text-xs">Ordem: <b>{o.tipo_servico}</b> — {o.secretaria} — <b>{o.status}</b></div>)}</li>)}</ul>}</section>
         {hist.length > 0 && <section className="card p-4"><h2 className="font-bold">Histórico de prioridade</h2><ul className="mt-2 space-y-1 text-sm">{hist.map((h) => <li key={h.id}>{data(h.criado_em)}: índice {h.score} ({h.prioridade}). {h.motivo}</li>)}</ul></section>}
       </div>

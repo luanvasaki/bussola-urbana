@@ -1,17 +1,20 @@
 @tailwind base; @tailwind components; @tailwind utilities;
 html,body{background:#eefbf3;color:#0d2b20}
-h1,h2{font-family:var(--f-display),system-ui,sans-serif;letter-spacing:-0.01em}
-.card{@apply rounded-2xl bg-white shadow-sm ring-1 ring-black/5}
-.btn{@apply inline-flex items-center justify-center rounded-xl bg-forest px-4 py-2.5 text-sm font-semibold text-white hover:bg-forest-800 disabled:opacity-50}
-.btn-o{@apply inline-flex items-center justify-center rounded-xl border-2 border-forest px-4 py-2.5 text-sm font-semibold text-forest hover:bg-mint-100}
-.inp{@apply w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-forest-600}
+h1,h2{font-family:var(--f-display),Georgia,serif;letter-spacing:-0.01em}
+.font-display{font-variant-numeric:lining-nums tabular-nums}
+/* Rótulo pequeno em maiúsculas espaçadas, para dados e legendas */
+.rotulo{@apply text-xs font-semibold uppercase tracking-[0.12em]}
+.card{@apply rounded-md bg-white shadow-sm ring-1 ring-black/5}
+.btn{@apply inline-flex items-center justify-center rounded-md bg-forest px-4 py-2.5 text-sm font-semibold text-white hover:bg-forest-800 disabled:opacity-50}
+.btn-o{@apply inline-flex items-center justify-center rounded-md border-2 border-forest px-4 py-2.5 text-sm font-semibold text-forest hover:bg-mint-100}
+.inp{@apply w-full rounded-md border border-black/10 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-forest-600}
 .lbl{@apply mb-1.5 block text-sm font-semibold text-forest/80}
 .maplibregl-popup-content{font-size:12px}
 
 /* Página de entrada */
 .bu-landing{font-family:var(--f-texto),system-ui,sans-serif}
-.bu-entrada{@apply relative block rounded-xl px-4 py-2 transition-colors duration-200}
-.bu-botao{@apply inline-flex items-center rounded-xl px-6 py-3.5 font-semibold transition-colors duration-200}
+.bu-entrada{@apply relative block rounded-md px-4 py-2 transition-colors duration-200}
+.bu-botao{@apply inline-flex items-center rounded-md px-6 py-3.5 font-semibold transition-colors duration-200}
 .bu-landing a:focus-visible{outline:3px solid #a7e8c4;outline-offset:3px}
 .bu-landing section:not(.bg-forest) a:focus-visible{outline-color:#1f6b4e}
 .bu-agulha,.bu-tremor{transform-box:view-box}

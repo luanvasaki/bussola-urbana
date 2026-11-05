@@ -92,5 +92,5 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
     if (!m.getBounds().contains([picked.lon, picked.lat]) || m.getZoom() < 15) m.flyTo({ center: [picked.lon, picked.lat], zoom: 16, duration: 900 });
   }, [picked]);
 
-  return <div ref={el} className={`w-full overflow-hidden rounded-xl ${className}`} />;
+  return <div ref={el} className={`w-full overflow-hidden rounded-md ${className}`} />;
 }
