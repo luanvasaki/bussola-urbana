@@ -41,6 +41,7 @@ create table if not exists relatos (
   protocolo text unique not null default ('BU-' || extract(year from now())::int || '-' || lpad(nextval('protocolo_seq')::text, 6, '0')),
   categoria text not null, eixo text not null, severidade text not null check (severidade in ('Alta','Média','Baixa')),
   descricao text, lat double precision not null, lon double precision not null, bairro text,
+  rua text, -- nome da rua, sem número: vem da busca por CEP/endereço ou do ponto no mapa
   area_id int references areas(id) on delete set null,
   status text not null default 'Relato recebido'
     check (status in ('Relato recebido','Em análise municipal','Encaminhado ao órgão responsável','Concluído')),
@@ -110,3 +111,6 @@ create policy "leitura publica ocorrencias" on ocorrencias for select using (tru
 -- Endurecimento (avisos do Supabase Advisors)
 alter function public.set_geom() set search_path = public;
 alter function public.relato_antes() set search_path = public;
+
+-- Relato por CEP ou endereço: guarda o nome da rua (sem número) para o gestor localizar o problema
+alter table relatos add column if not exists rua text;

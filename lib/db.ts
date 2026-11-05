@@ -10,13 +10,18 @@ const service = process.env.SUPABASE_SERVICE_ROLE_KEY;
 export const modoSupabase = () => Boolean(url && (service || anon));
 export const podeEscrever = () => Boolean(url && service);
 
+// O Next 14 guarda as respostas de fetch em cache sem prazo. Relatos, vistorias, ordens e status mudam a todo
+// momento, então o cliente com service role lê sempre na hora; o dado oficial (áreas e ocorrências) pode esperar 1 hora.
+const semCache: typeof fetch = (i, init) => fetch(i, { ...init, cache: "no-store" });
+const umaHora: typeof fetch = (i, init) => fetch(i, { ...init, next: { revalidate: 3600, tags: ["publico"] } }); // ações que mudam áreas chamam revalidateTag("publico")
+
 /** Cliente com service role: só roda no servidor (Server Components / Server Actions). */
 export function admin(): SupabaseClient | null {
-  return url && service ? createClient(url, service, { auth: { persistSession: false } }) : null;
+  return url && service ? createClient(url, service, { auth: { persistSession: false }, global: { fetch: semCache } }) : null;
 }
 function publico(): SupabaseClient | null {
   const key = anon ?? service;
-  return url && key ? createClient(url, key, { auth: { persistSession: false } }) : null;
+  return url && key ? createClient(url, key, { auth: { persistSession: false }, global: { fetch: umaHora } }) : null;
 }
 const local = <T,>(f: string): T => JSON.parse(readFileSync(path.join(process.cwd(), "data", `${f}.json`), "utf8"));
 
@@ -66,7 +71,7 @@ export async function getGestor(): Promise<Gestor> {
 export async function getRelatoPorProtocolo(protocolo: string): Promise<Relato | null> {
   const sb = admin();
   if (sb) {
-    const r = await sb.from("relatos").select("protocolo,categoria,eixo,severidade,lat,lon,bairro,status,criado_em,descricao").eq("protocolo", protocolo.trim().toUpperCase()).maybeSingle();
+    const r = await sb.from("relatos").select("protocolo,categoria,eixo,severidade,lat,lon,rua,bairro,status,criado_em,descricao").eq("protocolo", protocolo.trim().toUpperCase()).maybeSingle();
     return (r.data as Relato) ?? null;
   }
   return (await getGestor()).relatos.find((x) => x.protocolo === protocolo.trim().toUpperCase()) ?? null;

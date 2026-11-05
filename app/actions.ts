@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { admin } from "@/lib/db";
@@ -26,11 +26,12 @@ export async function criarRelato(_: unknown, fd: FormData) {
   const cat = CATEGORIAS.find((c) => c.nome === fd.get("categoria"));
   const lat = Number(fd.get("lat")), lon = Number(fd.get("lon"));
   if (!cat) return { erro: "Escolha o tipo de problema." };
-  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -23.65 || lat > -23.35 || lon < -47.6 || lon > -47.3) return { erro: "Toque no mapa para marcar o local, dentro de Sorocaba." };
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -23.65 || lat > -23.35 || lon < -47.6 || lon > -47.3) return { erro: "Marque o local: busque o CEP ou a rua, use sua localização ou toque no mapa, dentro de Sorocaba." };
   const descricao = String(fd.get("descricao") ?? "").slice(0, 400);
+  const texto = (k: string) => String(fd.get(k) ?? "").trim().slice(0, 120) || null; // só nome de rua e bairro, sem número
   const db = admin();
   if (!db) return { erro: SEM_DB };
-  const { data, error } = await db.from("relatos").insert({ categoria: cat.nome, eixo: cat.eixo, severidade: cat.sev, descricao: descricao || null, lat, lon }).select("protocolo").single();
+  const { data, error } = await db.from("relatos").insert({ categoria: cat.nome, eixo: cat.eixo, severidade: cat.sev, descricao: descricao || null, lat, lon, rua: texto("rua"), bairro: texto("bairro") }).select("protocolo").single();
   if (error) return { erro: "Não foi possível registrar agora. Tente novamente." };
   redirect(`/cidadao/protocolo/${data.protocolo}`);
 }
@@ -50,7 +51,7 @@ export async function criarVistoria(_: unknown, fd: FormData) {
   const { error } = await db.from("vistorias").insert({ area_id, fiscal: String(fd.get("fiscal") || "Fiscal de campo"), problema, observacoes: String(fd.get("observacoes") ?? "") || null });
   if (error) return { erro: error.message };
   await db.from("areas").update({ status_workflow: "Em vistoria" }).eq("id", area_id).in("status_workflow", ["Aguardando triagem"]);
-  revalidatePath("/gestor", "layout");
+  revalidatePath("/gestor", "layout"); revalidateTag("publico");
   return { ok: "Vistoria registrada." };
 }
 export async function criarOrdem(_: unknown, fd: FormData) {
@@ -62,7 +63,7 @@ export async function criarOrdem(_: unknown, fd: FormData) {
   const { error } = await db.from("ordens_zeladoria").insert({ vistoria_id, tipo_servico: tipo, secretaria: sec });
   if (error) return { erro: error.message };
   if (v) await db.from("areas").update({ status_workflow: "Ordem emitida" }).eq("id", v.area_id);
-  revalidatePath("/gestor", "layout");
+  revalidatePath("/gestor", "layout"); revalidateTag("publico");
   return { ok: "Ordem emitida." };
 }
 export async function atualizarOrdem(fd: FormData) {
@@ -79,5 +80,5 @@ export async function atualizarOrdem(fd: FormData) {
       if (a) await db.from("historico_prioridades").insert({ area_id, score: a.indice, prioridade: prioridade(a.indice), motivo: "Ordem de zeladoria concluída (o score só muda com novos dados oficiais)" });
     }
   }
-  revalidatePath("/gestor", "layout");
+  revalidatePath("/gestor", "layout"); revalidateTag("publico");
 }

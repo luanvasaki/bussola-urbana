@@ -64,7 +64,8 @@ Para a prefeitura e as forças de segurança.
 Para quem está na rua: policiais, fiscais ou cidadãos.
 
 - **Mapa** com as áreas de atenção mais críticas.
-- **Relato anônimo:** tipo de problema (iluminação, infraestrutura, uso do espaço), ponto marcado no mapa e descrição opcional. Não pede nome, CPF, telefone nem e-mail.
+- **Relato anônimo:** tipo de problema (iluminação, infraestrutura, uso do espaço), local e descrição opcional. Não pede nome, CPF, telefone nem e-mail.
+- **Local do problema** de quatro jeitos: pelo **CEP**, pelo **nome da rua ou do bairro** (abreviações como "Av." e "XV" são entendidas), pela **localização do celular** ou tocando no mapa. O ponto encontrado aparece no mapa para ajuste fino.
 - **Protocolo** gerado no envio, no formato `BU-2026-000123`.
 - **Acompanhamento** do relato pelo protocolo, com uma linha do tempo de quatro etapas.
 
@@ -169,6 +170,7 @@ Os resultados são exploratórios: os participantes foram escolhidos por conveni
 ```
 app/
   page.tsx                 Página de apresentação
+  api/endereco/route.ts    Busca de CEP e endereço (ViaCEP e OpenStreetMap) para o relato de campo
   actions.ts               Server Actions: relato, vistoria, ordem, status
   gestor/                  Painel, relatos, intervenções, zonas, análise, login
   cidadao/                 Fluxo de campo: mapa, relatar, protocolo, acompanhar
@@ -231,6 +233,7 @@ npm run seed
 ## Privacidade e ética
 
 - **Relato anônimo:** sem nome, CPF, telefone ou e-mail. O protocolo é o único vínculo, e o formulário orienta a relatar problemas do lugar, nunca pessoas.
+- **Endereço sem número:** o relato guarda só o nome da rua e o bairro, além do ponto no mapa. A busca de CEP e endereço é feita pelo servidor do app no ViaCEP e no OpenStreetMap (Nominatim), sem enviar nada do relato.
 - **Acesso aos dados:** relatos, vistorias e ordens só são lidos e escritos pelo servidor, com a service role. O navegador lê apenas o dado oficial agregado, protegido por RLS.
 - **Sem previsão e sem perfis:** o índice descreve onde as ocorrências já se concentraram, nunca quem as cometeu. O reconhecimento facial e a integração com o Banco Nacional de Mandados de Prisão ficaram fora do escopo de propósito.
 - **Transparência:** cada parte do índice aparece no app, e a página de análise expõe os limites do método.

@@ -80,7 +80,10 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
   useEffect(() => {
     const m = map.current; if (!m) return;
     pick.current?.remove(); pick.current = null;
-    if (picked) pick.current = new maplibregl.Marker({ color: "#b91c1c" }).setLngLat([picked.lon, picked.lat]).addTo(m);
+    if (!picked) return;
+    pick.current = new maplibregl.Marker({ color: "#b91c1c" }).setLngLat([picked.lon, picked.lat]).addTo(m);
+    // ponto vindo da busca de endereço ou do GPS: leva o mapa até lá, perto o bastante para ajustar com o dedo
+    if (!m.getBounds().contains([picked.lon, picked.lat]) || m.getZoom() < 15) m.flyTo({ center: [picked.lon, picked.lat], zoom: 16, duration: 900 });
   }, [picked]);
 
   return <div ref={el} className={`w-full overflow-hidden rounded-xl ${className}`} />;
