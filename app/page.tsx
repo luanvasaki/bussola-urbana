@@ -119,7 +119,7 @@ export default async function Home() {
             </div>
             <div className="r r-dir" style={{ ["--i" as string]: 1 }}>
               <div className="mx-auto w-full max-w-[300px] rounded-[2.2rem] bg-forest-800 p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/campo-relato-2.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
+                <Image src="/telas/campo-relato-3.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Campo</h3>
               <p className="mt-1 max-w-[40ch] text-mint/70">Policiais, fiscais e cidadãos relatam pelo celular, sem login, informando o local pelo CEP, pela rua, pelo GPS ou no mapa. O protocolo permite acompanhar o andamento.</p>

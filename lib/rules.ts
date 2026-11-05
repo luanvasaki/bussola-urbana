@@ -40,8 +40,7 @@ export function encaminhamentos(a: Area): string[] {
 }
 
 export const CATEGORIAS = [
-  { nome: "Lâmpada apagada", eixo: "Iluminação", sev: "Alta" },
-  { nome: "Iluminação queimada", eixo: "Iluminação", sev: "Alta" },
+  { nome: "Iluminação apagada", eixo: "Iluminação", sev: "Alta" }, // une "Lâmpada apagada" e "Iluminação queimada"
   { nome: "Ponto cego / local escuro", eixo: "Iluminação", sev: "Alta" },
   { nome: "Calçada danificada", eixo: "Infraestrutura", sev: "Média" },
   { nome: "Buraco na via", eixo: "Infraestrutura", sev: "Média" },
