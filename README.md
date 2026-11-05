@@ -54,11 +54,11 @@ Para a prefeitura e as forças de segurança.
 | Tela | O que mostra |
 |---|---|
 | **Painel** | Indicadores, mapa de calor das ocorrências oficiais com as áreas de atenção e as zonas prioritárias ordenadas pelo índice |
-| **Ocorrências** | Relatos de campo com busca e filtros, e mudança de status (relato recebido, em análise municipal, encaminhado ao órgão responsável, concluído) |
+| **Relatos de campo** | Relatos com busca e filtros, e mudança de status (relato recebido, em análise municipal, encaminhado ao órgão responsável, concluído) |
 | **Intervenções** | Registro de vistorias em campo e emissão de ordens de zeladoria para a secretaria responsável |
-| **Zonas vulneráveis** | Tabela das 37 áreas com índice, prioridade, volume, período de pico e etapa do fluxo |
-| **Detalhe da zona** | Composição do índice, natureza das ocorrências, distribuição por período do dia, recomendação por regra e encaminhamentos sugeridos |
-| **Análise** | Base de dados, método, distribuição por período e limites, incluindo o teste de persistência |
+| **Áreas de atenção** | Tabela das 37 áreas com índice, prioridade, volume, período de pico e etapa do fluxo |
+| **Detalhe da área** | Composição do índice, natureza das ocorrências, distribuição por período do dia, recomendação por regra e encaminhamentos sugeridos |
+| **Análise e método** | Base de dados, método, distribuição por período e limites, incluindo o teste de persistência |
 
 ### Campo (`/cidadao`)
 Para quem está na rua: policiais, fiscais ou cidadãos.
@@ -113,7 +113,7 @@ Relato de campo → triagem do gestor → vistoria → ordem de zeladoria → co
 | Natureza | O que é |
 |---|---|
 | **Real** | Ocorrências da SSP-SP, as áreas de atenção e o Índice de Atenção calculados sobre elas |
-| **Demonstrativo** | Relatos, vistorias e ordens de exemplo, marcados como demonstrativos no app |
+| **Demonstrativo** | Relatos, vistorias e ordens de exemplo, marcados como "de exemplo" no app |
 | **Real, gerado no uso** | Relatos, vistorias e ordens enviados pelo site, gravados no Supabase |
 
 O índice usa **só dado oficial**. O relato de campo orienta a zeladoria, mas nunca entra no cálculo.
