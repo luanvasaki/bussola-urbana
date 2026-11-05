@@ -1,0 +1,7 @@
+export type Area = { id: number; bairro: string; n: number; natureza_top: string | null; ambiente_top: string | null; pct_veiculo: number; periodo_pico: string; concentracao_pico: number; pct_hora_incerta: number; lat: number; lon: number; raio_km: number; furto: number; roubo: number; trafico: number; score_volume: number; score_temporal: number; indice: number; status_workflow?: string };
+export type Oc = { lat: number; lon: number; area_id: number | null; natureza: "furto" | "roubo" | "trafico"; periodo: string; mes: number };
+export type Meta = { periodo_inicio: string; periodo_fim: string; n_total: number; n_em_areas: number; n_areas: number; fonte: string; gerado: string };
+export type Relato = { id?: number; protocolo: string; categoria: string; eixo: string; severidade: "Alta" | "Média" | "Baixa"; descricao: string | null; lat: number; lon: number; bairro: string | null; area_id?: number | null; status: string; demonstrativo?: boolean; criado_em: string };
+export type Vistoria = { id: number; area_id: number; fiscal: string; problema: string; observacoes: string | null; criado_em: string };
+export type Ordem = { id: number; vistoria_id: number; tipo_servico: string; secretaria: string; status: string; concluida_em?: string | null; criado_em: string };
+export type Historico = { id: number; area_id: number; score: number; prioridade: string; motivo: string | null; criado_em: string };
