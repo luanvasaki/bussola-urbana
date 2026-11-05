@@ -113,7 +113,7 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
         )}
       </svg>
       {mes !== null && (
-        <p className="pointer-events-none absolute right-6 top-4 z-[5] text-sm text-mint/70 lg:right-10">
+        <p className="pointer-events-none absolute bottom-4 right-6 z-[5] text-xs text-mint/70 sm:text-sm lg:bottom-auto lg:right-10 lg:top-4">
           Reproduzindo os registros de <span className="font-semibold text-mint">{MESES[mes - 1]} de {ano}</span>
         </p>
       )}
