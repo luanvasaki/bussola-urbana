@@ -8,11 +8,11 @@ import { COR, prioridade, nomeBairro } from "@/lib/rules";
 type Props = {
   areas?: Area[]; pontos?: Oc[]; relatos?: Relato[]; selectedId?: number | null; heat?: boolean;
   onSelect?: (id: number) => void; onPick?: (p: { lat: number; lon: number }) => void; picked?: { lat: number; lon: number } | null;
-  className?: string;
+  className?: string; cooperativo?: boolean;
 };
 const SOROCABA: [number, number] = [-47.4526, -23.5015];
 
-export default function MapView({ areas = [], pontos = [], relatos = [], selectedId, heat = true, onSelect, onPick, picked, className = "h-[420px]" }: Props) {
+export default function MapView({ areas = [], pontos = [], relatos = [], selectedId, heat = true, onSelect, onPick, picked, className = "h-[420px]", cooperativo = false }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const markers = useRef<maplibregl.Marker[]>([]);
@@ -22,6 +22,9 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
   useEffect(() => {
     const m = new maplibregl.Map({
       container: el.current!, center: SOROCABA, zoom: 11.3, attributionControl: { compact: true },
+      // Em telas de toque, um dedo rola a página e dois movem o mapa (o mapa não "prende" a rolagem do formulário)
+      cooperativeGestures: cooperativo && window.matchMedia("(pointer: coarse)").matches,
+      locale: { "CooperativeGesturesHandler.MobileHelpText": "Use dois dedos para mover o mapa", "CooperativeGesturesHandler.WindowsHelpText": "Use Ctrl + rolagem para aproximar", "CooperativeGesturesHandler.MacHelpText": "Use ⌘ + rolagem para aproximar" },
       style: { version: 8, sources: { osm: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, attribution: "© OpenStreetMap" } }, layers: [{ id: "osm", type: "raster", source: "osm" }] },
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
@@ -55,10 +58,13 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
     markers.current.forEach((x) => x.remove()); markers.current = [];
     for (const a of areas) {
       const cor = COR[prioridade(a.indice)];
-      const d = document.createElement("button");
-      d.title = `${nomeBairro(a.bairro)} — índice ${a.indice}`;
+      const clicavel = Boolean(cb.current.onSelect);
+      const d = document.createElement(clicavel ? "button" : "div");
+      const rotulo = `${nomeBairro(a.bairro)}, Índice de Atenção ${a.indice}, prioridade ${prioridade(a.indice).toLowerCase()}`;
+      d.title = rotulo; d.setAttribute("aria-label", clicavel ? `Selecionar ${rotulo}` : rotulo); if (!clicavel) d.setAttribute("role", "img");
       const sel = a.id === selectedId;
-      d.style.cssText = `background:${cor};color:#fff;border:${sel ? "3px solid #0d2b20" : "2px solid #fff"};border-radius:999px;min-width:${sel ? 36 : 30}px;height:${sel ? 36 : 30}px;font:700 12px system-ui;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer`;
+      const texto = prioridade(a.indice) === "Média" ? "#0d2b20" : "#fff"; // branco sobre laranja não tem contraste suficiente
+      d.style.cssText = `display:grid;place-items:center;background:${cor};color:${texto};border:${sel ? "3px solid #0d2b20" : "2px solid #fff"};border-radius:999px;min-width:${sel ? 36 : 30}px;height:${sel ? 36 : 30}px;font:700 12px system-ui;box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:${clicavel ? "pointer" : "default"}`;
       d.textContent = String(a.indice);
       d.onclick = (ev) => { ev.stopPropagation(); cb.current.onSelect?.(a.id); };
       markers.current.push(new maplibregl.Marker({ element: d }).setLngLat([a.lon, a.lat]).addTo(m));

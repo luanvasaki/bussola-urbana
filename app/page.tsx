@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import { getPublico } from "@/lib/db";
 import { prioridade } from "@/lib/rules";
 import MapaDados from "@/components/landing/MapaDados";
@@ -9,9 +8,6 @@ import Revela from "@/components/landing/Revela";
 import Video from "@/components/landing/Video";
 
 export const dynamic = "force-dynamic";
-
-const display = Bricolage_Grotesque({ subsets: ["latin"], variable: "--f-display" });
-const texto = Instrument_Sans({ subsets: ["latin"], variable: "--f-texto" });
 
 const n = (v: number) => v.toLocaleString("pt-BR");
 const mes = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", { month: "long" });
@@ -30,7 +26,7 @@ export default async function Home() {
   ];
 
   return (
-    <main className={`${display.variable} ${texto.variable} bu-landing min-h-screen`}>
+    <main className="bu-landing min-h-screen">
       {/* Herói */}
       <section className="relative flex min-h-[640px] flex-col overflow-hidden bg-forest text-mint lg:h-[100svh]">
         <header className="relative z-20 border-b border-mint/10 bg-forest/85 backdrop-blur">
@@ -79,7 +75,7 @@ export default async function Home() {
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />{altas} áreas de alta prioridade</span>
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média prioridade</span>
               </span>
-              <span className="block max-w-[52ch] text-xs text-mint/50">Cada ponto é uma ocorrência registrada pela SSP-SP. O pulso repete os registros em ordem; não é tempo real.</span>
+              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP. O pulso repete os registros em ordem; não é tempo real.</span>
             </figcaption>
           </div>
         </figure>
@@ -115,7 +111,7 @@ export default async function Home() {
           <Revela className="mt-14 grid items-end gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] lg:gap-16">
             <div className="r r-esq">
               <div className="overflow-hidden rounded-xl bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/gestor-painel.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de zonas prioritárias" width={1568} height={759} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
+                <Image src="/telas/gestor-painel-2.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Gestor</h3>
               <p className="mt-1 max-w-[52ch] text-mint/70">Prefeitura e forças de segurança acompanham as áreas de atenção, leem os relatos de campo e abrem vistorias e ordens de zeladoria.</p>
@@ -123,7 +119,7 @@ export default async function Home() {
             </div>
             <div className="r r-dir" style={{ ["--i" as string]: 1 }}>
               <div className="mx-auto w-full max-w-[300px] rounded-[2.2rem] bg-forest-800 p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/campo-relato.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
+                <Image src="/telas/campo-relato-2.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Campo</h3>
               <p className="mt-1 max-w-[40ch] text-mint/70">Policiais, fiscais e cidadãos relatam pelo celular, sem login, informando o local pelo CEP, pela rua, pelo GPS ou no mapa. O protocolo permite acompanhar o andamento.</p>
@@ -146,9 +142,9 @@ export default async function Home() {
             { d: "2 de novembro", q: "Munícipe", p: "Estudante que circula a pé e de ônibus", v: "Enviou o relato anônimo em cerca de 45 segundos. Pediu protocolo e preferiu um site a um aplicativo que ocupe memória do celular." },
           ].map((e, i) => (
             <li key={e.q} className="r rounded-2xl bg-white p-6 ring-1 ring-forest/10" style={{ ["--i" as string]: i }}>
-              <span className="text-sm text-forest/55">{e.d}</span>
+              <span className="text-sm text-forest/70">{e.d}</span>
               <h3 className="mt-2 font-display text-xl font-bold">{e.q}</h3>
-              <p className="text-sm text-forest/60">{e.p}</p>
+              <p className="text-sm text-forest/70">{e.p}</p>
               <p className="mt-3 leading-relaxed text-forest/80">{e.v}</p>
             </li>
           ))}
@@ -195,12 +191,12 @@ export default async function Home() {
 
       <footer className="bg-forest text-mint/70">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 text-sm sm:grid-cols-2 lg:grid-cols-4 lg:px-10">
-          <p><span className="font-semibold text-mint">Equipe</span><br />Luan Vasaki Morais Guimarães, gestão do projeto<br />Igor Kendi Grigoleto Takeyama, UI/UX<br />Yasmin Alves Braga Carvalho, pesquisa e documentação<br />Hudson Albuquerque Machado, banco de dados e repositório</p>
+          <div><p className="font-semibold text-mint">Equipe</p><ul className="mt-1 space-y-0.5"><li>Luan Vasaki Morais Guimarães</li><li>Igor Kendi Grigoleto Takeyama</li><li>Yasmin Alves Braga Carvalho</li><li>Hudson Albuquerque Machado</li></ul></div>
           <p><span className="font-semibold text-mint">Orientação</span><br />Profa. Ma. Brenda Medina de Oliveira</p>
-          <p><span className="font-semibold text-mint">Tecnologia</span><br />Next.js, Supabase com PostGIS, MapLibre e Python com scikit-learn. <a href="https://github.com/luanvasaki/bussola-urbana" className="underline decoration-mint/40 underline-offset-4 hover:decoration-mint">Código no GitHub</a>.</p>
-          <p><span className="font-semibold text-mint">Dados</span><br />{meta.fonte}. Relatos, vistorias e ordens de exemplo aparecem marcados como demonstrativos.</p>
+          <div><p className="font-semibold text-mint">Tecnologia</p><ul className="mt-1 space-y-0.5"><li>Next.js e React</li><li>Supabase com PostGIS</li><li>MapLibre e OpenStreetMap</li><li>Python com scikit-learn</li><li>Vercel</li></ul><a href="https://github.com/luanvasaki/bussola-urbana" className="mt-2 inline-block underline decoration-mint/40 underline-offset-4 hover:decoration-mint">Código no GitHub</a></div>
+          <p><span className="font-semibold text-mint">Dados</span><br />{meta.fonte}. Relatos, vistorias e ordens criados para a apresentação aparecem marcados como de exemplo.</p>
         </div>
-        <p className="mx-auto max-w-7xl px-6 pb-10 text-xs text-mint/45 lg:px-10">Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, Sorocaba, 2026. Alinhado aos ODS 11 e 16.</p>
+        <p className="mx-auto max-w-7xl px-6 pb-10 text-xs text-mint/65 lg:px-10">Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, Sorocaba, 2026. Alinhado aos ODS 11 e 16.</p>
       </footer>
     </main>
   );

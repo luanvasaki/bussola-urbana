@@ -46,7 +46,8 @@ export async function getPublico(): Promise<Publico> {
   return { areas: local<Area[]>("areas"), ocorrencias: local<Oc[]>("ocorrencias"), meta: local<Meta>("meta"), origem: "arquivo local" };
 }
 
-export type Gestor = { relatos: Relato[]; vistorias: Vistoria[]; ordens: Ordem[]; historico: Historico[] };
+/** origem "exemplo": o banco não respondeu e a tela mostra os dados de exemplo do arquivo local, sem edição. */
+export type Gestor = { relatos: Relato[]; vistorias: Vistoria[]; ordens: Ordem[]; historico: Historico[]; origem: "supabase" | "exemplo" };
 export async function getGestor(): Promise<Gestor> {
   const sb = admin();
   if (sb) {
@@ -56,8 +57,8 @@ export async function getGestor(): Promise<Gestor> {
       sb.from("ordens_zeladoria").select("*").order("criado_em", { ascending: false }),
       sb.from("historico_prioridades").select("*").order("criado_em", { ascending: false }),
     ]);
-    if (!r.error && !v.error && !o.error) return { relatos: r.data as Relato[], vistorias: v.data as Vistoria[], ordens: o.data as Ordem[], historico: (h.data ?? []) as Historico[] };
-    console.error("Erro lendo dados do gestor:", r.error ?? v.error ?? o.error);
+    if (!r.error && !v.error && !o.error && !h.error) return { relatos: r.data as Relato[], vistorias: v.data as Vistoria[], ordens: o.data as Ordem[], historico: h.data as Historico[], origem: "supabase" };
+    console.error("Erro lendo dados do gestor:", r.error ?? v.error ?? o.error ?? h.error);
   }
   const d = local<{ relatos: Relato[]; vistorias: Omit<Vistoria, "id">[]; ordens: (Omit<Ordem, "id" | "vistoria_id" | "criado_em"> & { vistoria_idx: number; secretaria: string })[] }>("demo");
   return {
@@ -65,6 +66,7 @@ export async function getGestor(): Promise<Gestor> {
     vistorias: d.vistorias.map((x, i) => ({ ...x, id: i + 1 })),
     ordens: d.ordens.map((x, i) => ({ id: i + 1, vistoria_id: x.vistoria_idx + 1, tipo_servico: x.tipo_servico, secretaria: x.secretaria, status: x.status, criado_em: "2026-09-20T13:00:00Z" })),
     historico: [],
+    origem: "exemplo",
   };
 }
 
@@ -72,6 +74,7 @@ export async function getRelatoPorProtocolo(protocolo: string): Promise<Relato |
   const sb = admin();
   if (sb) {
     const r = await sb.from("relatos").select("protocolo,categoria,eixo,severidade,lat,lon,rua,bairro,status,criado_em,descricao").eq("protocolo", protocolo.trim().toUpperCase()).maybeSingle();
+    if (r.error) { console.error("Erro buscando protocolo:", r.error); throw new Error("Banco indisponível"); } // vai para a tela de erro, não para "não encontrado"
     return (r.data as Relato) ?? null;
   }
   return (await getGestor()).relatos.find((x) => x.protocolo === protocolo.trim().toUpperCase()) ?? null;

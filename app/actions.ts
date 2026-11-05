@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { admin } from "@/lib/db";
 import { COOKIE, token } from "@/lib/auth";
-import { CATEGORIAS, prioridade } from "@/lib/rules";
+import { CATEGORIAS, ETAPAS, prioridade } from "@/lib/rules";
 
 const SEM_DB = "Banco não configurado: o app está em modo demonstração (somente leitura). Configure o Supabase para gravar.";
 async function exigeGestor() {
@@ -23,6 +23,8 @@ export async function sair() { cookies().delete(COOKIE); redirect("/gestor/login
 
 // ---- Cidadão: relato anônimo, sem login e sem dado pessoal ----
 export async function criarRelato(_: unknown, fd: FormData) {
+  // Campo invisível para pessoas: só robôs preenchem. Finge que deu certo para não ensinar o robô.
+  if (String(fd.get("site") ?? "")) redirect("/cidadao");
   const cat = CATEGORIAS.find((c) => c.nome === fd.get("categoria"));
   const lat = Number(fd.get("lat")), lon = Number(fd.get("lon"));
   if (!cat) return { erro: "Escolha o tipo de problema." };
@@ -31,54 +33,78 @@ export async function criarRelato(_: unknown, fd: FormData) {
   const texto = (k: string) => String(fd.get(k) ?? "").trim().slice(0, 120) || null; // só nome de rua e bairro, sem número
   const db = admin();
   if (!db) return { erro: SEM_DB };
+  // Freio contra envio em massa sem guardar IP (o relato é anônimo): limite global por minuto, folgado para a feira
+  const { count } = await db.from("relatos").select("id", { count: "exact", head: true }).gte("criado_em", new Date(Date.now() - 60_000).toISOString());
+  if ((count ?? 0) >= 40) return { erro: "Muitos relatos chegaram neste minuto. Aguarde um pouco e envie de novo." };
   const { data, error } = await db.from("relatos").insert({ categoria: cat.nome, eixo: cat.eixo, severidade: cat.sev, descricao: descricao || null, lat, lon, rua: texto("rua"), bairro: texto("bairro") }).select("protocolo").single();
   if (error) return { erro: "Não foi possível registrar agora. Tente novamente." };
   redirect(`/cidadao/protocolo/${data.protocolo}`);
 }
 
 // ---- Gestor ----
+const SECRETARIAS = ["Secretaria de Obras / Iluminação", "Secretaria de Mobilidade", "Zeladoria"];
+const STATUS_ORDEM = ["Pendente", "Em andamento", "Concluída"];
+const campo = (fd: FormData, k: string, max: number) => String(fd.get(k) ?? "").trim().slice(0, max);
+type Res = { erro?: string; ok?: string };
+const falha = (onde: string, e: unknown): Res => { console.error(`Erro em ${onde}:`, e); return { erro: "Não foi possível salvar agora. Tente novamente." }; };
+const atualiza = () => { revalidatePath("/gestor", "layout"); revalidateTag("publico"); };
+
 export async function atualizarRelato(fd: FormData) {
   await exigeGestor();
   const db = admin(); if (!db) return;
-  await db.from("relatos").update({ status: String(fd.get("status")) }).eq("id", Number(fd.get("id")));
+  const id = Number(fd.get("id")), status = String(fd.get("status"));
+  if (!Number.isInteger(id) || !(ETAPAS as readonly string[]).includes(status)) return;
+  const { error } = await db.from("relatos").update({ status }).eq("id", id);
+  if (error) console.error("Erro em atualizarRelato:", error);
   revalidatePath("/gestor", "layout");
 }
-export async function criarVistoria(_: unknown, fd: FormData) {
+export async function criarVistoria(_: unknown, fd: FormData): Promise<Res> {
   await exigeGestor();
   const db = admin(); if (!db) return { erro: SEM_DB };
-  const area_id = Number(fd.get("area_id")), problema = String(fd.get("problema") ?? "").trim();
-  if (!area_id || !problema) return { erro: "Informe a área e o problema identificado." };
-  const { error } = await db.from("vistorias").insert({ area_id, fiscal: String(fd.get("fiscal") || "Fiscal de campo"), problema, observacoes: String(fd.get("observacoes") ?? "") || null });
-  if (error) return { erro: error.message };
-  await db.from("areas").update({ status_workflow: "Em vistoria" }).eq("id", area_id).in("status_workflow", ["Aguardando triagem"]);
-  revalidatePath("/gestor", "layout"); revalidateTag("publico");
+  const area_id = Number(fd.get("area_id")), problema = campo(fd, "problema", 200);
+  if (!Number.isInteger(area_id) || !problema) return { erro: "Informe a área e o problema identificado." };
+  const { error } = await db.from("vistorias").insert({ area_id, fiscal: campo(fd, "fiscal", 80) || "Fiscal de campo", problema, observacoes: campo(fd, "observacoes", 600) || null });
+  if (error) return falha("criarVistoria", error);
+  // Nova vistoria abre o fluxo, e reabre uma área que já estava concluída
+  await db.from("areas").update({ status_workflow: "Em vistoria" }).eq("id", area_id).in("status_workflow", ["Aguardando triagem", "Concluída"]);
+  atualiza();
   return { ok: "Vistoria registrada." };
 }
-export async function criarOrdem(_: unknown, fd: FormData) {
+export async function criarOrdem(_: unknown, fd: FormData): Promise<Res> {
   await exigeGestor();
   const db = admin(); if (!db) return { erro: SEM_DB };
-  const vistoria_id = Number(fd.get("vistoria_id")), tipo = String(fd.get("tipo_servico") ?? "").trim(), sec = String(fd.get("secretaria") ?? "").trim();
-  if (!vistoria_id || !tipo || !sec) return { erro: "Preencha vistoria, serviço e secretaria." };
+  const vistoria_id = Number(fd.get("vistoria_id")), tipo = campo(fd, "tipo_servico", 120), sec = campo(fd, "secretaria", 80);
+  if (!Number.isInteger(vistoria_id) || !tipo || !SECRETARIAS.includes(sec)) return { erro: "Preencha vistoria, serviço e secretaria." };
   const { data: v } = await db.from("vistorias").select("area_id").eq("id", vistoria_id).single();
+  if (!v) return { erro: "Vistoria não encontrada." };
   const { error } = await db.from("ordens_zeladoria").insert({ vistoria_id, tipo_servico: tipo, secretaria: sec });
-  if (error) return { erro: error.message };
-  if (v) await db.from("areas").update({ status_workflow: "Ordem emitida" }).eq("id", v.area_id);
-  revalidatePath("/gestor", "layout"); revalidateTag("publico");
+  if (error) return falha("criarOrdem", error);
+  await db.from("areas").update({ status_workflow: "Ordem emitida" }).eq("id", v.area_id);
+  atualiza();
   return { ok: "Ordem emitida." };
 }
 export async function atualizarOrdem(fd: FormData) {
   await exigeGestor();
   const db = admin(); if (!db) return;
   const id = Number(fd.get("id")), status = String(fd.get("status"));
-  await db.from("ordens_zeladoria").update({ status, concluida_em: status === "Concluída" ? new Date().toISOString() : null }).eq("id", id);
-  if (status === "Concluída") {
-    const { data: o } = await db.from("ordens_zeladoria").select("vistorias(area_id)").eq("id", id).single();
-    const area_id = (o as unknown as { vistorias: { area_id: number } } | null)?.vistorias?.area_id;
-    if (area_id) {
-      const { data: a } = await db.from("areas").select("indice").eq("id", area_id).single();
+  if (!Number.isInteger(id) || !STATUS_ORDEM.includes(status)) return;
+  const { data: o } = await db.from("ordens_zeladoria").select("status, vistorias(area_id)").eq("id", id).single();
+  if (!o || o.status === status) return; // nada mudou: não grava data nem histórico de novo
+  const area_id = (o as unknown as { vistorias: { area_id: number } | null }).vistorias?.area_id;
+  const { error } = await db.from("ordens_zeladoria").update({ status, concluida_em: status === "Concluída" ? new Date().toISOString() : null }).eq("id", id);
+  if (error) { console.error("Erro em atualizarOrdem:", error); return; }
+  if (area_id) {
+    // A área só fica "Concluída" quando todas as ordens dela estiverem concluídas
+    const { data: vs } = await db.from("vistorias").select("id").eq("area_id", area_id);
+    const { data: os } = await db.from("ordens_zeladoria").select("status").in("vistoria_id", (vs ?? []).map((x) => x.id));
+    const todas = (os ?? []).length > 0 && (os ?? []).every((x) => x.status === "Concluída");
+    const { data: a } = await db.from("areas").select("indice, status_workflow").eq("id", area_id).single();
+    if (todas && a?.status_workflow !== "Concluída") {
       await db.from("areas").update({ status_workflow: "Concluída" }).eq("id", area_id);
-      if (a) await db.from("historico_prioridades").insert({ area_id, score: a.indice, prioridade: prioridade(a.indice), motivo: "Ordem de zeladoria concluída (o score só muda com novos dados oficiais)" });
+      await db.from("historico_prioridades").insert({ area_id, score: a!.indice, prioridade: prioridade(a!.indice), motivo: "Ordens de zeladoria concluídas (o índice só muda com novos dados oficiais)" });
+    } else if (!todas && a?.status_workflow === "Concluída") {
+      await db.from("areas").update({ status_workflow: "Ordem emitida" }).eq("id", area_id); // ordem reaberta
     }
   }
-  revalidatePath("/gestor", "layout"); revalidateTag("publico");
+  atualiza();
 }

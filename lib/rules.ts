@@ -5,8 +5,24 @@ export const PERIODO_CURTO: Record<string, string> = { "De madrugada": "madrugad
 export const prioridade = (i: number) => (i >= 70 ? "Alta" : i >= 45 ? "Média" : "Baixa") as "Alta" | "Média" | "Baixa";
 export const COR = { Alta: "#b91c1c", Média: "#d97706", Baixa: "#1f6b4e" } as const;
 
+// A base da SSP traz bairros em caixa alta e sem acento ("VILA MINEIRAO"). Padroniza e devolve os acentos conhecidos.
+const ACENTOS: Record<string, string> = {
+  Mineirao: "Mineirão", Barao: "Barão", Cecilia: "Cecília", Rosalia: "Rosália", America: "América", Betania: "Betânia", Sao: "São",
+  Tres: "Três", Vitoria: "Vitória", Regia: "Régia", Hortencia: "Hortência", Espirito: "Espírito", Olimpia: "Olímpia", Eugenia: "Eugênia",
+  Joao: "João", Jose: "José", Antonio: "Antônio", Conceicao: "Conceição", Paraiso: "Paraíso", Gloria: "Glória", Lucia: "Lúcia",
+};
+const MINUSCULAS = new Set(["de", "da", "do", "das", "dos", "di", "e"]);
 export const nomeBairro = (s: string) =>
-  s.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase()).replace(/ (Dos|Das|De|Do|Da|E) /g, (m) => m.toLowerCase());
+  s.trim().toLowerCase().split(/\s+/).map((w, i) => {
+    if (i > 0 && MINUSCULAS.has(w)) return w;
+    if (/^(i{1,3}|iv|vi{1,3}|ix)$/.test(w)) return w.toUpperCase(); // "Vila Hortência III"
+    const t = w.charAt(0).toUpperCase() + w.slice(1);
+    return ACENTOS[t] ?? t;
+  }).join(" ");
+
+/** Rótulo do período do dia com crase ("À tarde"); as chaves vêm assim da base. */
+export const rotuloPeriodo = (k: string) => ({ "A tarde": "À tarde", "A noite": "À noite" } as Record<string, string>)[k] ?? k;
+export const NATUREZA_ROTULO: Record<string, string> = { furto: "Furto", roubo: "Roubo", trafico: "Tráfico" };
 
 // Regras de negócio especificadas em docs/ARQUITETURA.md — transparentes, sem IA.
 export function recomendacao(a: Area): string {

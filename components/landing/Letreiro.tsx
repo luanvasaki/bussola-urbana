@@ -12,7 +12,7 @@ export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[
   const passo = Math.max(1, Math.floor(dentro.length / ITENS));
   const itens = dentro.filter((_, i) => i % passo === 0).slice(0, ITENS).map((o) => {
     const a = porId.get(o.area_id!)!;
-    return { natureza: NATUREZA[o.natureza], bairro: nomeBairro(a.bairro), periodo: o.periodo.toLowerCase(), mes: `${MESES[o.mes - 1]} de ${ano}`, cor: COR[prioridade(a.indice)] };
+    return { natureza: NATUREZA[o.natureza], bairro: nomeBairro(a.bairro), periodo: o.periodo.toLowerCase().replace(/^a /, "à "), mes: `${MESES[o.mes - 1]} de ${ano}`, cor: COR[prioridade(a.indice)] };
   });
   const faixa = (oculto: boolean) => (
     <ul className="flex shrink-0 items-center" aria-hidden={oculto || undefined}>
@@ -20,7 +20,7 @@ export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[
         <li key={i} className="flex items-center gap-2.5 whitespace-nowrap px-6">
           <i className="h-2 w-2 shrink-0 rounded-full" style={{ background: it.cor }} />
           <span><b className="font-semibold text-mint">{it.natureza}</b> em {it.bairro}, {it.periodo}</span>
-          <span className="text-mint/45">{it.mes}</span>
+          <span className="text-mint/65">{it.mes}</span>
         </li>
       ))}
     </ul>

@@ -22,8 +22,20 @@ async function obter<T>(url: string): Promise<T | null> {
     return r.ok ? ((await r.json()) as T) : null;
   } catch { return null; }
 }
+// O Nominatim aceita 1 consulta por segundo. As chamadas desta instância entram numa fila espaçada;
+// se a fila crescer demais, a rota responde na hora pedindo para marcar no mapa, em vez de deixar a pessoa esperando.
+let fila: Promise<unknown> = Promise.resolve();
+let naFila = 0;
+class Ocupado extends Error {}
+function espacado<T>(fn: () => Promise<T>): Promise<T> {
+  if (naFila >= 6) return Promise.reject(new Ocupado());
+  naFila++;
+  const vez = fila.then(fn);
+  fila = vez.catch(() => null).then(() => new Promise((r) => setTimeout(r, 1100)));
+  return vez.finally(() => { naFila--; });
+}
 const nominatim = (caminho: string, p: Record<string, string>) =>
-  obter<Nom[] | Nom>(`https://nominatim.openstreetmap.org/${caminho}?${new URLSearchParams({ format: "jsonv2", addressdetails: "1", ...p })}`);
+  espacado(() => obter<Nom[] | Nom>(`https://nominatim.openstreetmap.org/${caminho}?${new URLSearchParams({ format: "jsonv2", addressdetails: "1", ...p })}`));
 
 const bairroDe = (a: Record<string, string> = {}) => a.suburb ?? a.neighbourhood ?? a.quarter ?? a.city_district ?? null;
 const cidadeDe = (a: Record<string, string> = {}) => a.city ?? a.town ?? a.municipality ?? "";
@@ -45,18 +57,29 @@ const ABREV: [RegExp, string][] = [
 const expandir = (q: string) => ABREV.reduce((t, [re, por]) => t.replace(re, por), q);
 
 const erro = (msg: string, status = 404) => NextResponse.json({ erro: msg }, { status });
+// A rede da Vercel guarda respostas iguais por 1 dia: menos consultas ao ViaCEP e ao Nominatim (limite de 1 por segundo)
+const CACHE = { "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800" };
+const ok = (corpo: unknown) => NextResponse.json(corpo, { headers: CACHE });
 
 export async function GET(req: NextRequest) {
+  try { return await responder(req); } catch (e) {
+    if (e instanceof Ocupado) return erro("Muitas buscas ao mesmo tempo. Tente de novo em alguns segundos ou toque no mapa.", 503);
+    throw e;
+  }
+}
+
+async function responder(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
 
   // Ponto tocado no mapa
   if (sp.has("lat")) {
-    const lat = Number(sp.get("lat")), lon = Number(sp.get("lon"));
+    // 4 casas decimais (cerca de 10 m) bastam para achar a rua e fazem toques próximos reaproveitarem o cache
+    const lat = +Number(sp.get("lat")).toFixed(4), lon = +Number(sp.get("lon")).toFixed(4);
     if (!DENTRO(lat, lon)) return erro("Ponto fora de Sorocaba.", 400);
     const n = (await nominatim("reverse", { lat: String(lat), lon: String(lon), zoom: "18" })) as Nom | null;
     const a = n?.address ?? {};
     const rua = a.road ?? a.pedestrian ?? null, bairro = bairroDe(a);
-    return NextResponse.json({ lugar: { rotulo: rotular(rua, bairro), rua, bairro, lat, lon } satisfies Lugar });
+    return ok({ lugar: { rotulo: rotular(rua, bairro), rua, bairro, lat, lon } satisfies Lugar });
   }
 
   const q = (sp.get("q") ?? "").trim().slice(0, 120);
@@ -73,7 +96,7 @@ export async function GET(req: NextRequest) {
     if ((!ponto || !DENTRO(+ponto.lat, +ponto.lon)) && rua)
       ponto = ((await nominatim("search", { street: rua, city: "Sorocaba", country: "Brasil", limit: "1", viewbox: VIEWBOX, bounded: "1" })) as Nom[] | null)?.[0];
     if (!ponto || !DENTRO(+ponto.lat, +ponto.lon)) return erro("Achamos o CEP, mas não o ponto no mapa. Toque no mapa para marcar o local.");
-    return NextResponse.json({ lugares: [{ rotulo: rotular(rua, bairro, `CEP ${cep.slice(0, 5)}-${cep.slice(5)}`), rua, bairro, lat: +(+ponto.lat).toFixed(6), lon: +(+ponto.lon).toFixed(6) }] satisfies Lugar[] });
+    return ok({ lugares: [{ rotulo: rotular(rua, bairro, `CEP ${cep.slice(0, 5)}-${cep.slice(5)}`), rua, bairro, lat: +(+ponto.lat).toFixed(6), lon: +(+ponto.lon).toFixed(6) }] satisfies Lugar[] });
   }
 
   // Rua, bairro ou ponto de referência
@@ -85,5 +108,5 @@ export async function GET(req: NextRequest) {
   const vistos = new Set<string>();
   const lugares = r.map(paraLugar).filter((l): l is Lugar => !!l && !vistos.has(l.rotulo) && !!vistos.add(l.rotulo)).slice(0, 5);
   if (!lugares.length) return erro("Não encontramos esse endereço em Sorocaba. Tente o nome completo da rua, sem abreviar (ex.: Rua Quinze de Novembro), ou toque no mapa.");
-  return NextResponse.json({ lugares });
+  return ok({ lugares });
 }

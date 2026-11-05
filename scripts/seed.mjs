@@ -30,5 +30,5 @@ if (!count) {   // dados demonstrativos (relatos/vistorias/ordens) só na primei
   ok(await sb.from("areas").update({ status_workflow: "Em vistoria" }).eq("id", 3), "wf");
 }
 const hist = await sb.from("historico_prioridades").select("id", { head: true, count: "exact" });
-if (!hist.count) ok(await sb.from("historico_prioridades").insert(areas.map(a => ({ area_id: a.id, score: a.indice, prioridade: a.indice >= 70 ? "Alta" : a.indice >= 50 ? "Média" : "Baixa", motivo: "Carga inicial SSP-SP" }))), "historico");
+if (!hist.count) ok(await sb.from("historico_prioridades").insert(areas.map(a => ({ area_id: a.id, score: a.indice, prioridade: a.indice >= 70 ? "Alta" : a.indice >= 45 ? "Média" : "Baixa", motivo: "Carga inicial SSP-SP" }))), "historico");
 console.log(`OK: ${areas.length} áreas, ${oc.length} ocorrências, demonstrativo ${count ? "já existia" : "criado"}`);
