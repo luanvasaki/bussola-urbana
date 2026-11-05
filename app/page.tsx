@@ -6,6 +6,7 @@ import { prioridade } from "@/lib/rules";
 import MapaDados from "@/components/landing/MapaDados";
 import Letreiro from "@/components/landing/Letreiro";
 import Revela from "@/components/landing/Revela";
+import Video from "@/components/landing/Video";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,10 @@ export default async function Home() {
               <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 lg:text-lg">
                 <b className="font-medium tabular-nums text-mint">{n(meta.n_total)} registros</b> da SSP-SP de furto, roubo e tráfico, de {periodo}, agrupados em <b className="font-medium tabular-nums text-mint">{meta.n_areas} áreas de atenção</b>. Cada área tem um índice de 0 a 100, com o cálculo à vista.
               </p>
+              <a href="#video" className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-mint text-forest"><svg aria-hidden="true" viewBox="0 0 24 24" className="ml-0.5 h-3.5 w-3.5" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
+                Assistir ao vídeo de apresentação
+              </a>
             </div>
             <figcaption className="hidden space-y-1 lg:block">
               <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-mint/75">
@@ -151,6 +156,20 @@ export default async function Home() {
         <Revela>
           <p className="r mt-10 max-w-[68ch] border-l-4 border-forest-600 pl-5 leading-relaxed text-forest/85">O que mudou: o relato de campo passou a gerar um <b className="font-semibold text-forest">número de protocolo com acompanhamento</b>, e o acesso de campo funciona pelo navegador, sem instalar nada. As entrevistas são exploratórias, com participantes escolhidos por conveniência, e indicam a direção do produto, sem generalização.</p>
         </Revela>
+      </section>
+
+      {/* Vídeo pitch da equipe */}
+      <section id="video" className="scroll-mt-6 bg-forest text-mint">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:px-10 lg:py-28">
+          <Revela>
+            <h2 className="r max-w-[14ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-bold leading-[1.02] tracking-[-0.025em]">A equipe apresenta a Bússola</h2>
+            <p className="r mt-4 max-w-[40ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>O vídeo pitch do projeto: o problema, a solução e como chegamos até aqui.</p>
+            <a href="https://www.youtube.com/watch?v=fL9kssxu_SM" target="_blank" rel="noopener noreferrer" className="r mt-6 inline-block text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
+          </Revela>
+          <Revela>
+            <div className="r r-dir"><Video id="fL9kssxu_SM" titulo="Bússola Urbana, pitch UPX I, Facens 2026" /></div>
+          </Revela>
+        </div>
       </section>
 
       {/* Limites */}

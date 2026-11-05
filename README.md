@@ -5,6 +5,7 @@
 A Bússola Urbana usa os registros abertos de ocorrências da Secretaria da Segurança Pública de São Paulo (SSP-SP) para mostrar onde as ocorrências se concentram em Sorocaba e organizar essas áreas por um **Índice de Atenção** que dá para explicar. A decisão continua sendo de uma pessoa: o sistema apoia a escolha de onde vistoriar, iluminar ou reforçar a manutenção, mas não prevê crimes e não avalia pessoas.
 
 - **Site:** https://bussola-urbana-app.vercel.app
+- **Vídeo de apresentação:** https://www.youtube.com/watch?v=fL9kssxu_SM
 - **Projeto acadêmico:** Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, 2026, com o tema Cidades Inteligentes.
 - **Orientação:** Profa. Ma. Brenda Medina de Oliveira
 
