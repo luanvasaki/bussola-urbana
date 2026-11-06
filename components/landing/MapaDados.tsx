@@ -1,6 +1,7 @@
 import type { Area, Oc } from "@/lib/types";
 import { nomeBairro, prioridade, COR } from "@/lib/rules";
 import MapaVivo, { type Alvo } from "./MapaVivo";
+import CalorVerde from "./CalorVerde";
 
 /** Mapa-assinatura da página de entrada: SVG estático renderizado no servidor a partir dos dados reais. */
 const W = 1000;
@@ -20,20 +21,13 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
   const H = Math.round((maxLat - minLat) * escala);
   const xy = (lat: number, lon: number) => [(lon - minLon) * k * escala, (maxLat - lat) * escala] as const;
 
-  // Uma bolinha por ocorrência. Muitos registros da SSP têm a mesma coordenada (até 51 no mesmo endereço):
-  // esses se espalham numa espiral fixa (ângulo áureo) em volta do ponto, sem inventar nenhum registro.
-  const OURO = Math.PI * (3 - Math.sqrt(5)), PASSO = 1.1;
-  const vistos = new Map<string, number>();
-  const pontos: { x: number; y: number; dentro: boolean }[] = [];
-  let dentro = "", fora = "";
+  // Mapa de calor: cada ocorrência soma intensidade no ponto exato; o verde fica mais forte onde há mais registros.
+  const pontos: { x: number; y: number }[] = [];
+  const calor: number[] = [];
   for (const o of ocorrencias) {
-    let [x, y] = xy(o.lat, o.lon);
+    const [x, y] = xy(o.lat, o.lon);
     if (x < -0.8 * W || y < -0.4 * H || x > 1.8 * W || y > 1.4 * H) continue; // pontos distantes também entram: o mapa vai de borda a borda
-    const k = `${o.lat},${o.lon}`, i = vistos.get(k) ?? 0; vistos.set(k, i + 1);
-    if (i) { const r = PASSO * Math.sqrt(i), t = i * OURO; x += r * Math.cos(t); y += r * Math.sin(t); }
-    const d = `M${x.toFixed(1)} ${y.toFixed(1)}h0`;
-    if (o.area_id != null) dentro += d; else fora += d;
-    pontos.push({ x, y, dentro: o.area_id != null });
+    pontos.push({ x, y }); calor.push(Math.round(x * 10) / 10, Math.round(y * 10) / 10);
   }
 
   // A bússola fica no quadrante mais vazio do mapa e aponta para a área de maior índice.
@@ -59,6 +53,7 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
 
   return (
     <>
+    <CalorVerde W={W} H={H} pts={calor} />
     <svg viewBox={`0 0 ${W} ${H}`} overflow="visible" className="absolute inset-0 h-full w-full" role="img"
       aria-label={`Mapa de Sorocaba com ${ocorrencias.length.toLocaleString("pt-BR")} ocorrências oficiais e ${areas.length} áreas de atenção. A agulha percorre as áreas de alta prioridade, começando por ${topo.nome}, índice ${topo.indice}.`}>
       <g aria-hidden="true">
@@ -70,9 +65,6 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
         </defs>
         <image href="/ruas-sorocaba.svg" x={rx} y={ry} width={rx2 - rx} height={ry2 - ry} preserveAspectRatio="none" opacity="0.13" mask="url(#ruas-mask)" />
         <path d={grade.map((g) => g.d).join(" ")} stroke="#eefbf3" strokeOpacity="0.06" strokeWidth="1" fill="none" />
-        {/* fora das áreas mais apagadas; dentro das áreas de atenção, mais claras: a concentração aparece pela quantidade */}
-        <path d={fora} stroke="#a7e8c4" strokeOpacity={0.4} strokeWidth={2.2} strokeLinecap="round" fill="none" />
-        <path d={dentro} stroke="#dff5e8" strokeOpacity={0.85} strokeWidth={2.4} strokeLinecap="round" fill="none" />
         {areas.map((a) => {
           const [x, y] = xy(a.lat, a.lon);
           const pr = prioridade(a.indice);
