@@ -64,8 +64,12 @@ export default async function Home() {
           <div className="relative z-10 order-first px-6 pb-2 pt-7 lg:order-none lg:flex lg:h-full lg:max-w-[40rem] lg:flex-col lg:justify-between lg:px-10 lg:py-12">
             <div>
               <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Onde as ocorrências se concentram em Sorocaba</h1>
-              <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 lg:text-lg">
-                <b className="font-medium tabular-nums text-mint">{n(meta.n_total)} registros</b> da SSP-SP de furto, roubo e tráfico, de {periodo}, agrupados em <b className="font-medium tabular-nums text-mint">{meta.n_areas} áreas de atenção</b>. Cada área tem um índice de 0 a 100, com o cálculo à vista.
+              <dl className="mt-5 flex gap-x-8 border-b-[3px] border-mint/70 pb-4 lg:max-w-[30rem]">
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">registros da SSP-SP</dt><dd className="font-display text-[2.9rem] font-bold sm:text-[clamp(3.25rem,6.5vw,5.25rem)] leading-[0.85] tracking-[-0.03em]">{n(meta.n_total)}</dd></div>
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">áreas de atenção</dt><dd className="font-display text-[2.9rem] font-bold sm:text-[clamp(3.25rem,6.5vw,5.25rem)] leading-[0.85] tracking-[-0.03em]">{meta.n_areas}</dd></div>
+              </dl>
+              <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75">
+                Furto, roubo e tráfico de {periodo}. Cada área tem um índice de 0 a 100, com o cálculo à vista.
               </p>
               <a href="#video" className="mt-5 hidden items-center lg:inline-flex gap-2.5 rounded-md border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-mint text-forest"><svg aria-hidden="true" viewBox="0 0 24 24" className="ml-0.5 h-3.5 w-3.5" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
@@ -113,7 +117,7 @@ export default async function Home() {
           <Revela className="mt-14 grid items-end gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] lg:gap-16">
             <div className="r r-esq">
               <div className="overflow-hidden rounded-md bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/gestor-painel-3.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
+                <Image src="/telas/gestor-painel-4.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Gestor</h3>
               <p className="mt-1 max-w-[52ch] text-mint/70">Prefeitura e forças de segurança acompanham as áreas de atenção, leem os relatos de campo e abrem vistorias e ordens de zeladoria.</p>
@@ -121,7 +125,7 @@ export default async function Home() {
             </div>
             <div className="r r-dir" style={{ ["--i" as string]: 1 }}>
               <div className="mx-auto w-full max-w-[300px] rounded-[2.2rem] bg-forest-800 p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/campo-relato-4.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
+                <Image src="/telas/campo-relato-5.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Campo</h3>
               <p className="mt-1 max-w-[40ch] text-mint/70">Policiais, fiscais e cidadãos relatam pelo celular, sem login, informando o local pelo CEP, pela rua, pelo GPS ou no mapa. O protocolo permite acompanhar o andamento.</p>
@@ -143,7 +147,7 @@ export default async function Home() {
             { d: "30 de outubro", q: "Agente de campo", p: "Policial militar da Ronda Patrulha", v: "Registrou a vistoria em cerca de 30 segundos. Hoje relata problemas da rua e nunca sabe se o pedido andou, por isso pediu um protocolo." },
             { d: "2 de novembro", q: "Munícipe", p: "Estudante que circula a pé e de ônibus", v: "Enviou o relato anônimo em cerca de 45 segundos. Pediu protocolo e preferiu um site a um aplicativo que ocupe memória do celular." },
           ].map((e, i) => (
-            <li key={e.q} className="r rounded-md bg-white p-6 ring-1 ring-forest/10" style={{ ["--i" as string]: i }}>
+            <li key={e.q} className="r rounded-md border-[1.5px] border-forest/25 p-6" style={{ ["--i" as string]: i }}>
               <span className="text-sm text-forest/70">{e.d}</span>
               <h3 className="mt-2 font-display text-xl font-bold">{e.q}</h3>
               <p className="text-sm text-forest/70">{e.p}</p>

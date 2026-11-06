@@ -7,7 +7,7 @@ export function Barra({ valor, max = 100 }: { valor: number; max?: number }) {
   return <div className="h-1.5 w-full rounded-full bg-black/10"><div className="h-full rounded-full" style={{ width: `${(valor / max) * 100}%`, background: COR[prioridade(valor * (100 / max))] }} /></div>;
 }
 export function Kpi({ rotulo, valor, sub, destaque }: { rotulo: string; valor: React.ReactNode; sub: React.ReactNode; destaque?: boolean }) {
-  return <div className={`card p-4 ${destaque ? "border-l-4 border-red-700" : ""}`}><div className="rotulo text-forest/70">{rotulo}</div><div className="mt-1.5 font-display text-3xl font-bold">{valor}</div><div className="mt-1 text-xs text-forest/70">{sub}</div></div>;
+  return <div className={`card p-4 ${destaque ? "border-l-4 border-red-700" : ""}`}><div className="rotulo text-forest/70">{rotulo}</div><div className="mt-2 font-display text-[2.6rem] font-bold leading-none tracking-[-0.02em]">{valor}</div><div className="mt-1 text-xs text-forest/70">{sub}</div></div>;
 }
 export const data = (s: string) => new Date(s).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric", timeZone: "America/Sao_Paulo" });
 export function Aviso({ children }: { children: React.ReactNode }) {

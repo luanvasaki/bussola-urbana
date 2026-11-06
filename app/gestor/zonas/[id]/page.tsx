@@ -31,7 +31,7 @@ export default async function Zona({ params }: { params: { id: string } }) {
         {hist.length > 0 && <section className="card p-4"><h2 className="font-bold">Histórico de prioridade</h2><ul className="mt-2 space-y-1 text-sm">{hist.map((h) => <li key={h.id}>{data(h.criado_em)}: índice {h.score} ({h.prioridade}). {h.motivo}</li>)}</ul></section>}
       </div>
       <div className="space-y-4">
-        <section className="card space-y-3 p-4 text-sm"><h2 className="font-bold">Índice de Atenção</h2>
+        <section className="card space-y-3 p-4 text-sm"><h2 className="rotulo font-sans text-forest/70">Índice de Atenção</h2><div className="font-display text-7xl font-bold leading-[0.85] tracking-[-0.03em]">{a.indice}<span className="ml-1 text-2xl font-semibold text-forest/50">/100</span></div>
           <div><div className="mb-1 flex justify-between text-xs"><span>Volume (percentil)</span><b>{a.score_volume}/50</b></div><Barra valor={a.score_volume} max={50} /></div>
           <div><div className="mb-1 flex justify-between text-xs"><span>Concentração no período de pico</span><b>{a.score_temporal}/50</b></div><Barra valor={a.score_temporal} max={50} /></div>
           <p className="text-xs text-forest/70">Índice = média ponderada 50/50 dos percentis. Calculado apenas com dado oficial (SSP-SP). Relato de campo não entra no cálculo.</p></section>

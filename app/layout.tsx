@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 // Serifada encorpada nos títulos e números grandes; Inter no texto corrido. Mesmo par em todo o app.
 const display = Fraunces({ subsets: ["latin"], variable: "--f-display", axes: ["opsz"] });
@@ -17,5 +18,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#0d2b20" };
 
 export default function Root({ children }: { children: React.ReactNode }) {
-  return <html lang="pt-BR" className={`${display.variable} ${texto.variable}`}><body className="font-sans antialiased">{children}</body></html>;
+  return <html lang="pt-BR" className={`${display.variable} ${texto.variable}`}><body className="font-sans antialiased">{children}<Analytics /></body></html>;
 }

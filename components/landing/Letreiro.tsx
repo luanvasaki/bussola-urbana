@@ -28,7 +28,7 @@ export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[
 
   return (
     <div className="bu-letreiro relative flex items-stretch border-t border-mint/15 bg-forest-800 text-sm text-mint/80">
-      <div className="z-10 flex shrink-0 items-center gap-2 bg-mint px-4 py-3 font-display font-bold text-forest">
+      <div className="z-10 flex shrink-0 items-center gap-2 bg-mint px-4 py-3 rotulo text-forest">
         <i className="h-2 w-2 rounded-full bg-[#b91c1c]" />
         Registros SSP-SP
       </div>

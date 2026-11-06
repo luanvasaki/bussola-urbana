@@ -12,7 +12,7 @@ export default function FormRelato() {
   const [st, act] = useFormState(criarRelato, null as { erro?: string } | null);
   const [cat, setCat] = useState("");
   return <form action={act} className="space-y-5">
-    <fieldset><legend className="lbl">1. Tipo de problema</legend><div className="grid grid-cols-2 gap-2">{CATEGORIAS.map((c) => <button type="button" key={c.nome} aria-pressed={cat === c.nome} onClick={() => setCat(c.nome)} className={`rounded-md border-2 px-2.5 py-2.5 text-left text-sm ${cat === c.nome ? "border-forest bg-forest text-white" : "border-forest/15 bg-white"}`}><div className="font-semibold">{c.nome}</div><div className="text-xs opacity-80">{c.eixo}</div></button>)}</div><input type="hidden" name="categoria" value={cat} /></fieldset>
+    <fieldset><legend className="lbl">1. Tipo de problema</legend><div className="grid grid-cols-2 gap-2">{CATEGORIAS.map((c) => <button type="button" key={c.nome} aria-pressed={cat === c.nome} onClick={() => setCat(c.nome)} className={`rounded-md border-2 px-2.5 py-2.5 text-left text-sm ${cat === c.nome ? "border-forest bg-forest text-white" : "border-forest/25"}`}><div className="font-semibold">{c.nome}</div><div className="text-xs opacity-80">{c.eixo}</div></button>)}</div><input type="hidden" name="categoria" value={cat} /></fieldset>
     {/* Armadilha para robôs: invisível e fora da navegação por teclado; pessoas nunca preenchem */}
     <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden"><label>Site<input name="site" tabIndex={-1} autoComplete="off" /></label></div>
     <Local />
