@@ -40,7 +40,7 @@ export default function Painel({ areas, pontos, relatos, n_total, agora }: { are
       <div className="grid items-start gap-4 xl:grid-cols-[1fr_380px]">
         <section className="card p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <div><h2 className="text-xl font-semibold leading-tight">Mapa de calor de Sorocaba</h2><p className="text-xs text-forest/70">O calor mostra as ocorrências oficiais; de perto, aparece cada registro. Os quadrados escuros são relatos de campo.</p></div>
+            <div><h2 className="text-xl font-semibold leading-tight">Mapa de calor de Sorocaba</h2><p className="text-xs text-forest/70">O calor mostra as ocorrências oficiais. Aproxime o mapa para ver cada registro e passe o mouse sobre um ponto para ver o tipo e o horário. Os quadrados escuros são relatos de campo.</p></div>
             <button type="button" aria-pressed={heat} onClick={() => setHeat(!heat)} className="btn-o px-2.5 py-1 text-xs">Calor: {heat ? "ligado" : "desligado"}</button>
           </div>
           <div className="mb-3 flex flex-wrap gap-x-5 gap-y-1" role="group" aria-label="Filtrar relatos no mapa">

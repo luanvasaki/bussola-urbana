@@ -13,6 +13,11 @@ h1,h2{font-family:var(--f-display),Georgia,serif;letter-spacing:-0.01em}
   .lbl{@apply mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-forest/75}
 }
 .maplibregl-popup-content{font-size:12px}
+.bu-dica .maplibregl-popup-content{background:#0d2b20;color:#eefbf3;border-radius:6px;padding:8px 10px;font-family:var(--f-texto),system-ui;box-shadow:none}
+.bu-dica .maplibregl-popup-tip{display:none}
+.bu-dica-t{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:rgb(238 251 243/.7);margin-bottom:3px}
+.bu-dica ul{margin:0;padding:0;list-style:none;line-height:1.5}
+.bu-dica-mais{color:rgb(238 251 243/.7);margin-top:2px}
 @media (pointer:coarse){.maplibregl-ctrl-group button{width:40px;height:40px}}
 .bu-landing{overflow-x:clip}
 

@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Area, Oc, Relato } from "@/lib/types";
-import { COR, prioridade, nomeBairro } from "@/lib/rules";
+import { COR, prioridade, nomeBairro, NATUREZA_ROTULO, rotuloPeriodo } from "@/lib/rules";
+const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 type Props = {
   areas?: Area[]; pontos?: Oc[]; relatos?: Relato[]; selectedId?: number | null; heat?: boolean;
@@ -54,7 +55,7 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
   useEffect(() => {
     const m = map.current; if (!m) return;
     const draw = () => {
-      const data = { type: "FeatureCollection" as const, features: heat ? pontos.map((p) => ({ type: "Feature" as const, properties: {}, geometry: { type: "Point" as const, coordinates: [p.lon, p.lat] } })) : [] };
+      const data = { type: "FeatureCollection" as const, features: heat ? pontos.map((p) => ({ type: "Feature" as const, properties: { t: `${NATUREZA_ROTULO[p.natureza] ?? p.natureza}, ${rotuloPeriodo(p.periodo).toLowerCase()}, ${MESES[p.mes - 1]}/2026` }, geometry: { type: "Point" as const, coordinates: [p.lon, p.lat] } })) : [] };
       const src = m.getSource("pts") as maplibregl.GeoJSONSource | undefined;
       if (src) { src.setData(data); return; }
       m.addSource("pts", { type: "geojson", data });
@@ -62,8 +63,23 @@ export default function MapView({ areas = [], pontos = [], relatos = [], selecte
         "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 10, 6, 15, 24], "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 10, 0.25, 15, 0.9], "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.6, 15.5, 0.15],
         "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(255,255,255,0)", 0.3, "rgba(253,186,116,.55)", 0.6, "rgba(239,68,68,.7)", 1, "rgba(153,27,27,.9)"] } });
       // De perto, cada registro aparece como um ponto (o calor esmaece)
-      m.addLayer({ id: "pts-c", type: "circle", source: "pts", minzoom: 13.5, paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 13.5, 2, 17, 4.5], "circle-color": "#0d2b20", "circle-opacity": 0.55, "circle-stroke-color": "#eefbf3", "circle-stroke-width": 0.75 } });
+      m.addLayer({ id: "pts-c", type: "circle", source: "pts", minzoom: 13, paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 13, 2.5, 17, 5.5], "circle-color": "#0d2b20", "circle-opacity": 0.55, "circle-stroke-color": "#eefbf3", "circle-stroke-width": 0.75 } });
+      // Passar o mouse (ou tocar) num ponto mostra o tipo de crime, o período do dia e o mês.
+      // Vários registros no mesmo endereço ficam sobrepostos: a dica lista todos.
+      const dica = new maplibregl.Popup({ closeButton: false, closeOnClick: false, offset: 8, className: "bu-dica" });
+      const mostra = (e: maplibregl.MapLayerMouseEvent) => {
+        const fs = e.features ?? []; if (!fs.length) return;
+        const linhas = fs.map((f) => String(f.properties?.t ?? ""));
+        const cont = new Map<string, number>(); linhas.forEach((l) => cont.set(l, (cont.get(l) ?? 0) + 1));
+        const lista = [...cont].slice(0, 6).map(([l, n]) => `<li>${n > 1 ? `<b>${n}×</b> ` : ""}${l}</li>`).join("");
+        const titulo = fs.length === 1 ? "Ocorrência SSP-SP" : `${fs.length} ocorrências neste ponto`;
+        m.getCanvas().style.cursor = "pointer";
+        dica.setLngLat(e.lngLat).setHTML(`<div class="bu-dica-t">${titulo}</div><ul>${lista}</ul>${cont.size > 6 ? `<div class="bu-dica-mais">e mais ${cont.size - 6} tipos</div>` : ""}`).addTo(m);
+      };
+      m.on("mousemove", "pts-c", mostra);
+      m.on("click", "pts-c", mostra);
+      m.on("mouseleave", "pts-c", () => { dica.remove(); m.getCanvas().style.cursor = cb.current.onPick ? "crosshair" : ""; });
     };
     m.loaded() ? draw() : m.once("load", draw);
   }, [pontos, heat]);
