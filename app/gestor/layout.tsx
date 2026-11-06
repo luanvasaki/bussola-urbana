@@ -24,7 +24,7 @@ export default async function GestorLayout({ children }: { children: React.React
       <main id="conteudo" className="min-w-0 flex-1 p-4 md:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b-[1.5px] border-forest/25 pb-3">
           <span className="rotulo text-forest/70">SSP-SP · {fmt(meta.periodo_inicio)} a {fmt(meta.periodo_fim)}</span>
-          <span className="rotulo text-forest/70">Demonstração · UPX I, Facens</span>
+          <span className="rotulo text-forest/70">Protótipo UPX I - Facens</span>
         </div>
         {children}
       </main>
