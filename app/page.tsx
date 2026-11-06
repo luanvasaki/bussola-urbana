@@ -117,7 +117,7 @@ export default async function Home() {
           <Revela className="mt-14 grid items-end gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] lg:gap-16">
             <div className="r r-esq">
               <div className="overflow-hidden rounded-md bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/gestor-painel-4.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
+                <Image src="/telas/gestor-painel-5.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Gestor</h3>
               <p className="mt-1 max-w-[52ch] text-mint/70">Prefeitura e forças de segurança acompanham as áreas de atenção, leem os relatos de campo e abrem vistorias e ordens de zeladoria.</p>
@@ -125,7 +125,7 @@ export default async function Home() {
             </div>
             <div className="r r-dir" style={{ ["--i" as string]: 1 }}>
               <div className="mx-auto w-full max-w-[300px] rounded-[2.2rem] bg-forest-800 p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/campo-relato-5.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
+                <Image src="/telas/campo-relato-6.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
               </div>
               <h3 className="mt-6 font-display text-2xl font-bold">Campo</h3>
               <p className="mt-1 max-w-[40ch] text-mint/70">Policiais, fiscais e cidadãos relatam pelo celular, sem login, informando o local pelo CEP, pela rua, pelo GPS ou no mapa. O protocolo permite acompanhar o andamento.</p>
