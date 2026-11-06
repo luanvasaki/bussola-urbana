@@ -6,6 +6,6 @@ export default function GestorNav() {
   const p = usePathname();
   return <nav aria-label="Seções do gestor" className="mt-4 flex gap-1 overflow-x-auto md:mt-6 md:flex-col">{ITENS.map(([h, t]) => {
     const on = h === "/gestor" ? p === h : p.startsWith(h);
-    return <Link key={h} href={h} aria-current={on ? "page" : undefined} className={`whitespace-nowrap rounded-md px-3 py-2.5 text-sm ${on ? "bg-forest-600 font-semibold text-white" : "text-white/80 hover:bg-white/10"}`}>{t}</Link>;
+    return <Link key={h} href={h} aria-current={on ? "page" : undefined} className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm md:border-b-0 md:border-l-2 ${on ? "border-mint font-semibold text-mint" : "border-transparent text-mint/70 hover:text-mint"}`}>{t}</Link>;
   })}</nav>;
 }

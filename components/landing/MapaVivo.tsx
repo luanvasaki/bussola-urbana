@@ -79,8 +79,14 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
       }
       raf = requestAnimationFrame(passo);
     };
-    raf = requestAnimationFrame(passo);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+    // Só anima com o mapa na tela e a aba visível: poupa bateria no celular enquanto a pessoa lê o resto da página
+    let naTela = true;
+    const liga = () => { cancelAnimationFrame(raf); if (naTela && document.visibilityState === "visible") { ultimo = performance.now(); raf = requestAnimationFrame(passo); } };
+    const io = new IntersectionObserver(([e]) => { naTela = e.isIntersecting; liga(); });
+    io.observe(cv);
+    document.addEventListener("visibilitychange", liga);
+    liga();
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); document.removeEventListener("visibilitychange", liga); };
   }, [pulsos, W, H]);
 
   const alvo = alvos[i];

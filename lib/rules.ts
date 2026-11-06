@@ -48,5 +48,5 @@ export const CATEGORIAS = [
   { nome: "Mato alto em terreno", eixo: "Uso do espaço", sev: "Baixa" },
 ] as const;
 export const ETAPAS = ["Relato recebido", "Em análise municipal", "Encaminhado ao órgão responsável", "Concluído"] as const;
-export const ETAPA_DESC = ["Registrado com localização aproximada", "A equipe municipal avalia o relato", "Ex.: iluminação pública", "Status atualizado neste protocolo"];
+export const ETAPA_DESC = ["Registrado com localização aproximada", "A equipe municipal avalia o relato", "Ex.: iluminação pública", "Serviço executado pelo órgão responsável"];
 export const WORKFLOW = ["Aguardando triagem", "Em vistoria", "Ordem emitida", "Concluída"] as const;

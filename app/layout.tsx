@@ -18,5 +18,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#0d2b20" };
 
 export default function Root({ children }: { children: React.ReactNode }) {
-  return <html lang="pt-BR" className={`${display.variable} ${texto.variable}`}><body className="font-sans antialiased">{children}<Analytics /></body></html>;
+  return <html lang="pt-BR" className={`${display.variable} ${texto.variable}`}><body className="font-sans antialiased"><a href="#conteudo" className="btn sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50">Pular para o conteúdo</a>{children}<Analytics /></body></html>;
 }

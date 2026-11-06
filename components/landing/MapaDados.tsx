@@ -4,7 +4,6 @@ import MapaVivo, { type Alvo } from "./MapaVivo";
 
 /** Mapa-assinatura da página de entrada: SVG estático renderizado no servidor a partir dos dados reais. */
 const W = 1000;
-const CELULA = 7;
 const RUAS = { latN: -23.28, latS: -23.72, lonO: -47.8, lonL: -47.1 }; // recorte usado ao gerar public/ruas-sorocaba.svg
 
 function pct(v: number[], p: number) {
@@ -21,20 +20,26 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
   const H = Math.round((maxLat - minLat) * escala);
   const xy = (lat: number, lon: number) => [(lon - minLon) * k * escala, (maxLat - lat) * escala] as const;
 
-  // Agrega os pontos em células para manter o SVG leve.
-  const cel = new Map<string, number>();
+  // Uma bolinha por ocorrência. Muitos registros da SSP têm a mesma coordenada (até 51 no mesmo endereço):
+  // esses se espalham numa espiral fixa (ângulo áureo) em volta do ponto, sem inventar nenhum registro.
+  const OURO = Math.PI * (3 - Math.sqrt(5)), PASSO = 1.1;
+  const vistos = new Map<string, number>();
+  const pontos: { x: number; y: number; dentro: boolean }[] = [];
+  let dentro = "", fora = "";
   for (const o of ocorrencias) {
-    const [x, y] = xy(o.lat, o.lon);
+    let [x, y] = xy(o.lat, o.lon);
     if (x < -0.8 * W || y < -0.4 * H || x > 1.8 * W || y > 1.4 * H) continue; // pontos distantes também entram: o mapa vai de borda a borda
-    const key = `${Math.round(x / CELULA)},${Math.round(y / CELULA)}`;
-    cel.set(key, (cel.get(key) ?? 0) + 1);
+    const k = `${o.lat},${o.lon}`, i = vistos.get(k) ?? 0; vistos.set(k, i + 1);
+    if (i) { const r = PASSO * Math.sqrt(i), t = i * OURO; x += r * Math.cos(t); y += r * Math.sin(t); }
+    const d = `M${x.toFixed(1)} ${y.toFixed(1)}h0`;
+    if (o.area_id != null) dentro += d; else fora += d;
+    pontos.push({ x, y, dentro: o.area_id != null });
   }
-  const pontos = [...cel].map(([key, n]) => { const [i, j] = key.split(",").map(Number); return { x: i * CELULA, y: j * CELULA, n }; });
 
   // A bússola fica no quadrante mais vazio do mapa e aponta para a área de maior índice.
   const quadrantes = [[0.16, 0.2], [0.84, 0.2], [0.16, 0.82], [0.84, 0.82]].map(([fx, fy]) => {
     const x = fx * W, y = fy * H;
-    return { x, y, peso: pontos.reduce((a, p) => a + (Math.hypot(p.x - x, p.y - y) < 120 ? p.n : 0), 0) };
+    return { x, y, peso: pontos.reduce((a, p) => a + (Math.hypot(p.x - x, p.y - y) < 120 ? 1 : 0), 0) };
   });
   const { x: cx, y: cy } = quadrantes.sort((a, b) => a.peso - b.peso)[0];
   const alvos: Alvo[] = [...areas].sort((a, b) => b.indice - a.indice || b.n - a.n)
@@ -65,9 +70,9 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
         </defs>
         <image href="/ruas-sorocaba.svg" x={rx} y={ry} width={rx2 - rx} height={ry2 - ry} preserveAspectRatio="none" opacity="0.13" mask="url(#ruas-mask)" />
         <path d={grade.map((g) => g.d).join(" ")} stroke="#eefbf3" strokeOpacity="0.06" strokeWidth="1" fill="none" />
-        {pontos.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={Math.min(1.1 + Math.sqrt(p.n) * 0.75, 4.6)} fill="#a7e8c4" opacity={Math.min(0.28 + p.n * 0.06, 0.95)} />
-        ))}
+        {/* fora das áreas mais apagadas; dentro das áreas de atenção, mais claras: a concentração aparece pela quantidade */}
+        <path d={fora} stroke="#a7e8c4" strokeOpacity={0.4} strokeWidth={2.2} strokeLinecap="round" fill="none" />
+        <path d={dentro} stroke="#dff5e8" strokeOpacity={0.85} strokeWidth={2.4} strokeLinecap="round" fill="none" />
         {areas.map((a) => {
           const [x, y] = xy(a.lat, a.lon);
           const pr = prioridade(a.indice);

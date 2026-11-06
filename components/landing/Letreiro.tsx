@@ -3,7 +3,7 @@ import { nomeBairro, prioridade, COR } from "@/lib/rules";
 
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const NATUREZA = { furto: "Furto", roubo: "Roubo", trafico: "Tráfico" } as const;
-const ITENS = 54;
+const ITENS = 24;
 
 /** Letreiro estilo telejornal com ocorrências reais (em ordem cronológica) dentro das áreas de atenção. Só CSS, sem JS. */
 export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[]; areas: Area[]; ano: string }) {
@@ -32,8 +32,8 @@ export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[
         <i className="h-2 w-2 rounded-full bg-[#b91c1c]" />
         Registros SSP-SP
       </div>
-      <div className="relative flex-1 overflow-hidden" role="region" aria-label="Ocorrências registradas nas áreas de atenção, em ordem cronológica">
-        <div className="bu-letreiro-trilho flex w-max py-3" style={{ animationDuration: `${itens.length * 3.2}s` }}>
+      <div className="relative flex-1 overflow-hidden outline-none" role="region" tabIndex={0} aria-label="Ocorrências registradas nas áreas de atenção, em ordem cronológica. Toque para pausar.">
+        <div className="bu-letreiro-trilho flex w-max py-3" style={{ animationDuration: `${itens.length * 4}s` }}>
           {faixa(false)}
           {faixa(true)}
         </div>

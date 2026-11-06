@@ -26,7 +26,7 @@ export default async function Home() {
   ];
 
   return (
-    <main className="bu-landing min-h-screen">
+    <main id="conteudo" className="bu-landing min-h-screen">
       {/* Herói */}
       <section className="relative flex min-h-[640px] flex-col overflow-hidden bg-forest text-mint lg:h-[100svh]">
         <header className="relative z-20 border-b border-mint/10 bg-forest/85 backdrop-blur">
@@ -81,7 +81,7 @@ export default async function Home() {
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />{altas} áreas de alta prioridade</span>
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média prioridade</span>
               </span>
-              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP. O pulso repete os registros em ordem; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
+              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP; registros no mesmo endereço aparecem lado a lado. O pulso repete os registros em ordem; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
             </figcaption>
           </div>
         </figure>
