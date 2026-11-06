@@ -65,8 +65,8 @@ export default async function Home() {
             <div>
               <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Onde as ocorrências se concentram em Sorocaba</h1>
               <dl className="mt-5 flex gap-x-8 border-b-[3px] border-mint/70 pb-4 lg:max-w-[30rem]">
-                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">registros da SSP-SP</dt><dd className="font-display text-[2.9rem] font-bold sm:text-[clamp(3.25rem,6.5vw,5.25rem)] leading-[0.85] tracking-[-0.03em]">{n(meta.n_total)}</dd></div>
-                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">áreas de atenção</dt><dd className="font-display text-[2.9rem] font-bold sm:text-[clamp(3.25rem,6.5vw,5.25rem)] leading-[0.85] tracking-[-0.03em]">{meta.n_areas}</dd></div>
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">registros da SSP-SP</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)]">{n(meta.n_total)}</dd></div>
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">áreas de atenção</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)]">{meta.n_areas}</dd></div>
               </dl>
               <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75">
                 Furto, roubo e tráfico de {periodo}. Cada área tem um índice de 0 a 100, com o cálculo à vista.
