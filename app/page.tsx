@@ -81,7 +81,7 @@ export default async function Home() {
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />{altas} áreas de alta prioridade</span>
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média prioridade</span>
               </span>
-              <span className="block max-w-[52ch] text-xs text-mint/65">Mapa de calor das ocorrências registradas pela SSP-SP: quanto mais forte o verde, mais registros no local. O pulso repete os registros mês a mês, com destaque para os que estão dentro das áreas de atenção; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
+              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP; quanto mais escuro o verde, mais registros ao redor. O pulso repete os registros mês a mês, com destaque para os que estão dentro das áreas de atenção; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
             </figcaption>
           </div>
         </figure>

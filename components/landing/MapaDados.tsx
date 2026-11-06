@@ -1,7 +1,6 @@
 import type { Area, Oc } from "@/lib/types";
 import { nomeBairro, prioridade, COR } from "@/lib/rules";
 import MapaVivo, { type Alvo } from "./MapaVivo";
-import CalorVerde from "./CalorVerde";
 
 /** Mapa-assinatura da página de entrada: SVG estático renderizado no servidor a partir dos dados reais. */
 const W = 1000;
@@ -21,14 +20,30 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
   const H = Math.round((maxLat - minLat) * escala);
   const xy = (lat: number, lon: number) => [(lon - minLon) * k * escala, (maxLat - lat) * escala] as const;
 
-  // Mapa de calor: cada ocorrência soma intensidade no ponto exato; o verde fica mais forte onde há mais registros.
+  // Uma bolinha sólida por ocorrência. Registros na mesma coordenada se espalham numa espiral fixa (ângulo áureo),
+  // sem inventar nenhum registro. A cor vem da concentração ao redor: verde claro onde há poucos, verde escuro onde há muitos.
+  const OURO = Math.PI * (3 - Math.sqrt(5)), PASSO = 1.1;
+  const vistos = new Map<string, number>();
   const pontos: { x: number; y: number }[] = [];
-  const calor: number[] = [];
   for (const o of ocorrencias) {
-    const [x, y] = xy(o.lat, o.lon);
+    let [x, y] = xy(o.lat, o.lon);
     if (x < -0.8 * W || y < -0.4 * H || x > 1.8 * W || y > 1.4 * H) continue; // pontos distantes também entram: o mapa vai de borda a borda
-    pontos.push({ x, y }); calor.push(Math.round(x * 10) / 10, Math.round(y * 10) / 10);
+    const c = `${o.lat},${o.lon}`, i = vistos.get(c) ?? 0; vistos.set(c, i + 1);
+    if (i) { const r = PASSO * Math.sqrt(i), t = i * OURO; x += r * Math.cos(t); y += r * Math.sin(t); }
+    pontos.push({ x, y });
   }
+  // concentração = quantas ocorrências num raio de ~12 unidades (grade de células para contar rápido)
+  const CEL = 12, celulas = new Map<string, number>();
+  for (const p of pontos) { const c = `${Math.floor(p.x / CEL)},${Math.floor(p.y / CEL)}`; celulas.set(c, (celulas.get(c) ?? 0) + 1); }
+  const dens = pontos.map((p) => {
+    const cx = Math.floor(p.x / CEL), cy = Math.floor(p.y / CEL); let n = 0;
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) n += celulas.get(`${cx + dx},${cy + dy}`) ?? 0;
+    return n;
+  });
+  const cortes = [40, 65, 82, 93].map((q) => pct(dens, q));
+  const NIVEIS = ["#dff5e8", "#a7e8c4", "#6fdc98", "#2fb866", "#16884a"]; // do mais claro (pouca concentração) ao mais escuro (muita)
+  const caminhos = NIVEIS.map(() => "");
+  pontos.forEach((p, i) => { const n = cortes.filter((c) => dens[i] > c).length; caminhos[n] += `M${p.x.toFixed(1)} ${p.y.toFixed(1)}h0`; });
 
   // A bússola fica no quadrante mais vazio do mapa e aponta para a área de maior índice.
   const quadrantes = [[0.16, 0.2], [0.84, 0.2], [0.16, 0.82], [0.84, 0.82]].map(([fx, fy]) => {
@@ -53,7 +68,6 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
 
   return (
     <>
-    <CalorVerde W={W} H={H} pts={calor} />
     <svg viewBox={`0 0 ${W} ${H}`} overflow="visible" className="absolute inset-0 h-full w-full" role="img"
       aria-label={`Mapa de Sorocaba com ${ocorrencias.length.toLocaleString("pt-BR")} ocorrências oficiais e ${areas.length} áreas de atenção. A agulha percorre as áreas de alta prioridade, começando por ${topo.nome}, índice ${topo.indice}.`}>
       <g aria-hidden="true">
@@ -65,6 +79,7 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
         </defs>
         <image href="/ruas-sorocaba.svg" x={rx} y={ry} width={rx2 - rx} height={ry2 - ry} preserveAspectRatio="none" opacity="0.13" mask="url(#ruas-mask)" />
         <path d={grade.map((g) => g.d).join(" ")} stroke="#eefbf3" strokeOpacity="0.06" strokeWidth="1" fill="none" />
+        {caminhos.map((d, n) => <path key={n} d={d} stroke={NIVEIS[n]} strokeOpacity={0.6 + n * 0.1} strokeWidth={3} strokeLinecap="round" fill="none" />)}
         {areas.map((a) => {
           const [x, y] = xy(a.lat, a.lon);
           const pr = prioridade(a.indice);
