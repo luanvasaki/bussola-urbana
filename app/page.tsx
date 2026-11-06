@@ -5,6 +5,8 @@ import { prioridade } from "@/lib/rules";
 import MapaDados from "@/components/landing/MapaDados";
 import Letreiro from "@/components/landing/Letreiro";
 import Revela from "@/components/landing/Revela";
+import ComoFunciona from "@/components/landing/ComoFunciona";
+import DemoTelas from "@/components/landing/DemoTelas";
 import Video from "@/components/landing/Video";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +22,8 @@ export default async function Home() {
 
   const etapas = [
     { t: "Dados oficiais", d: `Boletins da SSP-SP de Sorocaba, de ${periodo}. Ficam só furto, roubo e tráfico com coordenada válida: ${n(meta.n_total)} ocorrências.` },
-    { t: "Áreas de atenção", d: `O DBSCAN agrupa ocorrências a até 250 m umas das outras, com no mínimo 20 por grupo. Resultado: ${meta.n_areas} áreas que reúnem ${pctAreas}% dos casos.` },
+    { t: "Áreas de atenção", d: `O DBSCAN junta as ocorrências que estão perto umas das outras. Resultado: ${meta.n_areas} áreas que reúnem ${pctAreas}% dos casos.`,
+      extra: "O que é o DBSCAN? Um método que procura aglomerados no mapa. Em volta de cada ocorrência, ele olha um raio de 250 m: se houver pelo menos 20 casos ali, forma um grupo, que vai crescendo pelos vizinhos. Casos isolados ficam de fora." },
     { t: "Índice de Atenção", d: "Nota de 0 a 100: metade vem do volume da área, metade de quanto os casos se concentram num período do dia. As duas partes aparecem no painel." },
     { t: "Ação dos órgãos públicos", d: "Regras escritas sugerem reforço ou monitoramento e encaminham para segurança, Obras, Iluminação ou Mobilidade. Quem está em campo relata, o gestor vistoria e abre a ordem." },
   ];
@@ -89,22 +92,12 @@ export default async function Home() {
         <Letreiro ocorrencias={ocorrencias} areas={areas} ano={meta.periodo_fim.slice(0, 4)} />
       </section>
 
-      {/* Como funciona: a linha é desenhada etapa por etapa, na ordem do fluxo de dados */}
+      {/* Como funciona: um lápis desenha etapa por etapa, seguindo as setas */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-10 lg:py-28">
         <Revela>
           <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Do boletim de ocorrência à ordem de serviço</h2>
         </Revela>
-        <Revela as="ol" className="mt-14 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-          {etapas.map((e, i) => (
-            <li key={e.t} className="bu-etapa relative pt-5" style={{ ["--i" as string]: i }}>
-              <span className="bu-num font-display text-5xl font-extrabold leading-none">{i + 1}</span>
-              <div className="r">
-                <h3 className="mt-3 font-display text-xl font-bold">{e.t}</h3>
-                <p className="mt-2 max-w-[36ch] leading-relaxed text-forest/75">{e.d}</p>
-              </div>
-            </li>
-          ))}
-        </Revela>
+        <ComoFunciona etapas={etapas} />
       </section>
 
       {/* As duas entradas, com as telas reais do app */}
@@ -114,24 +107,7 @@ export default async function Home() {
             <h2 className="r max-w-[18ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Duas formas de entrar, um só fluxo</h2>
             <p className="r mt-4 max-w-[56ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>Quem está na rua aponta o problema. Quem decide vê o problema no mapa, ao lado do índice da área, e transforma em vistoria e ordem de serviço.</p>
           </Revela>
-          <Revela className="mt-14 grid items-end gap-14 lg:grid-cols-[minmax(0,8fr)_minmax(0,4fr)] lg:gap-16">
-            <div className="r r-esq">
-              <div className="overflow-hidden rounded-md bg-forest-800 p-1.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/gestor-painel-5.jpg" alt="Painel do gestor: indicadores, mapa de calor de Sorocaba e lista de áreas prioritárias" width={1568} height={670} sizes="(min-width: 1024px) 760px, 100vw" className="rounded-lg" />
-              </div>
-              <h3 className="mt-6 font-display text-2xl font-bold">Gestor</h3>
-              <p className="mt-1 max-w-[52ch] text-mint/70">Prefeitura e forças de segurança acompanham as áreas de atenção, leem os relatos de campo e abrem vistorias e ordens de zeladoria.</p>
-              <Link href="/gestor" className="bu-botao mt-5 bg-mint text-forest hover:bg-mint-100">Entrar como gestor</Link>
-            </div>
-            <div className="r r-dir" style={{ ["--i" as string]: 1 }}>
-              <div className="mx-auto w-full max-w-[300px] rounded-[2.2rem] bg-forest-800 p-2.5 shadow-[0_30px_80px_-20px_rgba(0,0,0,.6)] ring-1 ring-mint/15">
-                <Image src="/telas/campo-relato-6.jpg" alt="Tela de campo: escolha do tipo de problema, busca do local por CEP ou endereço e envio anônimo" width={401} height={922} sizes="300px" className="rounded-[1.7rem]" />
-              </div>
-              <h3 className="mt-6 font-display text-2xl font-bold">Campo</h3>
-              <p className="mt-1 max-w-[40ch] text-mint/70">Policiais, fiscais e cidadãos relatam pelo celular, sem login, informando o local pelo CEP, pela rua, pelo GPS ou no mapa. O protocolo permite acompanhar o andamento.</p>
-              <Link href="/cidadao" className="bu-botao mt-5 border-2 border-mint/60 text-mint hover:border-mint">Entrar em campo</Link>
-            </div>
-          </Revela>
+          <DemoTelas />
         </div>
       </section>
 
