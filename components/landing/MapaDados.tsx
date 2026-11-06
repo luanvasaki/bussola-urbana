@@ -45,7 +45,7 @@ export default function MapaDados({ ocorrencias, areas, ano }: { ocorrencias: Oc
   const alvos: Alvo[] = [...areas].sort((a, b) => b.indice - a.indice || b.n - a.n)
     .filter((a, i) => i === 0 || prioridade(a.indice) === "Alta")
     .map((a) => { const [x, y] = xy(a.lat, a.lon); return { x: Math.round(x), y: Math.round(y), nome: nomeBairro(a.bairro), indice: a.indice }; });
-  const pulsos = ocorrencias.map((o) => { const [x, y] = xy(o.lat, o.lon); return [Math.round(x), Math.round(y), o.mes] as [number, number, number]; })
+  const pulsos = ocorrencias.map((o) => { const [x, y] = xy(o.lat, o.lon); return [Math.round(x), Math.round(y), o.mes, o.area_id != null ? 1 : 0] as [number, number, number, number]; })
     .filter(([x, y]) => x >= -0.8 * W && y >= -0.4 * H && x <= 1.8 * W && y <= 1.4 * H);
   const topo = alvos[0];
 

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export type Alvo = { x: number; y: number; nome: string; indice: number };
-type Props = { W: number; H: number; cx: number; cy: number; alvos: Alvo[]; pulsos: [number, number, number][]; ano: string };
+type Props = { W: number; H: number; cx: number; cy: number; alvos: Alvo[]; pulsos: [number, number, number, number][]; ano: string };
 
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const MS_POR_MES = 3200;
@@ -44,8 +44,9 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
     if (!cv || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = cv.getContext("2d")!;
     const meses = [...new Set(pulsos.map((p) => p[2]))].sort((a, b) => a - b);
-    const porMes = new Map(meses.map((m) => [m, pulsos.filter((p) => p[2] === m)]));
-    const vivos: { x: number; y: number; t: number }[] = [];
+    // Por mês, separados em dentro e fora das áreas de atenção: o pulso favorece os de dentro (4 em 5)
+    const porMes = new Map(meses.map((m) => { const l = pulsos.filter((p) => p[2] === m); return [m, { dentro: l.filter((p) => p[3] === 1), fora: l.filter((p) => p[3] === 0) }]; }));
+    const vivos: { x: number; y: number; t: number; d: boolean }[] = [];
     let raf = 0, inicio = performance.now(), ultimo = inicio, mesAtual = -1;
     let tr: [number, number, number] = [1, 0, 0]; // escala e deslocamento, iguais ao preserveAspectRatio "xMidYMid meet" do SVG
 
@@ -64,7 +65,7 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
       if (m !== mesAtual) { mesAtual = m; setMes(m); }
       const lista = porMes.get(m)!;
       const novos = Math.min(12, Math.floor(((agora - ultimo) / 1000) * PULSOS_POR_SEG * 1.0001 + Math.random()));
-      if (novos > 0) { ultimo = agora; for (let k = 0; k < novos; k++) { const p = lista[(Math.random() * lista.length) | 0]; vivos.push({ x: p[0], y: p[1], t: agora }); } }
+      if (novos > 0) { ultimo = agora; for (let k = 0; k < novos; k++) { const g = lista.dentro.length && (Math.random() < 0.8 || !lista.fora.length) ? lista.dentro : lista.fora; const p = g[(Math.random() * g.length) | 0]; vivos.push({ x: p[0], y: p[1], t: agora, d: p[3] === 1 }); } }
 
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, cv.width, cv.height);
@@ -73,9 +74,11 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
         const v = vivos[k], f = (agora - v.t) / VIDA;
         if (f >= 1) { vivos.splice(k, 1); continue; }
         const e = 1 - Math.pow(1 - f, 3);
-        ctx.beginPath(); ctx.arc(v.x, v.y, 3 + e * 20, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(238,251,243,${0.75 * (1 - f)})`; ctx.lineWidth = 1.6; ctx.stroke();
-        if (f < 0.35) { ctx.beginPath(); ctx.arc(v.x, v.y, 3.2, 0, Math.PI * 2); ctx.fillStyle = `rgba(238,251,243,${1 - f / 0.35})`; ctx.fill(); }
+        // Dentro das áreas de atenção: pulso maior e mais claro; fora: menor e apagado
+        const raio = v.d ? 24 : 11, forca = v.d ? 0.85 : 0.35;
+        ctx.beginPath(); ctx.arc(v.x, v.y, 3 + e * raio, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(238,251,243,${forca * (1 - f)})`; ctx.lineWidth = v.d ? 1.8 : 1.2; ctx.stroke();
+        if (f < 0.35) { ctx.beginPath(); ctx.arc(v.x, v.y, v.d ? 3.4 : 2.4, 0, Math.PI * 2); ctx.fillStyle = `rgba(238,251,243,${(v.d ? 1 : 0.5) * (1 - f / 0.35)})`; ctx.fill(); }
       }
       raf = requestAnimationFrame(passo);
     };
