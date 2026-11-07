@@ -5,7 +5,7 @@
 A Bússola Urbana usa os registros abertos de ocorrências da Secretaria da Segurança Pública de São Paulo (SSP-SP) para mostrar onde as ocorrências se concentram em Sorocaba e organizar essas áreas por um **Índice de Atenção** que dá para explicar. A decisão continua sendo de uma pessoa: o sistema apoia a escolha de onde vistoriar, iluminar ou reforçar a manutenção, mas não prevê crimes e não avalia pessoas.
 
 - **Site:** https://bussola-urbana-app.vercel.app
-- **Vídeo de apresentação:** https://www.youtube.com/watch?v=fL9kssxu_SM
+- **Vídeo de apresentação:** https://www.youtube.com/watch?v=oJHUoOpUxeE
 - **Projeto acadêmico:** Usina de Projetos Experimentais I (UPX 1), Análise e Desenvolvimento de Sistemas, Centro Universitário Facens, 2026, com o tema Cidades Inteligentes.
 - **Orientação:** Profa. Ma. Brenda Medina de Oliveira
 
@@ -281,7 +281,7 @@ O projeto se alinha principalmente ao **ODS 11** (Cidades e Comunidades Sustent�
 | Protótipo no Figma (app web) | [abrir protótipo](https://www.figma.com/proto/2O0kJ7FHDVJPgvXw8MbKx8/UPX-I---B%C3%9ASSOLA-URBANA---AC2?node-id=1-10&starting-point-node-id=1%3A10&scaling=min-zoom&hide-ui=1) |
 | Protótipo no Figma (app mobile) | [abrir protótipo](https://www.figma.com/proto/2O0kJ7FHDVJPgvXw8MbKx8/UPX-I---B%C3%9ASSOLA-URBANA---AC2?node-id=1-2403&starting-point-node-id=1%3A2403&scaling=min-zoom&hide-ui=1) |
 | Landing page (Figma) | https://www.figma.com/site/Bxk12K881G6ukxJJBtej1u/Projeto-UPX |
-| Vídeo pitch | https://youtu.be/fL9kssxu_SM |
+| Vídeo pitch | https://youtu.be/oJHUoOpUxeE |
 | Banner | https://canva.link/j91lc7o71tap635 |
 | Trello | https://trello.com/b/zABNfg66/mvp-bussola-urbana-upx |
 

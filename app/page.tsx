@@ -142,10 +142,10 @@ export default async function Home() {
           <Revela>
             <h2 className="r max-w-[14ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">A equipe apresenta a Bússola</h2>
             <p className="r mt-4 max-w-[40ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>O vídeo pitch do projeto: o problema, a solução e como chegamos até aqui.</p>
-            <a href="https://www.youtube.com/watch?v=fL9kssxu_SM" target="_blank" rel="noopener noreferrer" className="r mt-6 inline-block text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
+            <a href="https://www.youtube.com/watch?v=oJHUoOpUxeE" target="_blank" rel="noopener noreferrer" className="r mt-6 inline-block text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
           </Revela>
           <Revela>
-            <div className="r r-dir"><Video id="fL9kssxu_SM" titulo="Bússola Urbana, pitch UPX I, Facens 2026" /></div>
+            <div className="r r-dir"><Video id="oJHUoOpUxeE" titulo="Bússola Urbana, pitch UPX I, Facens 2026" /></div>
           </Revela>
         </div>
       </section>
