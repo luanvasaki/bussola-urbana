@@ -25,8 +25,8 @@ export function Nota({ x, y, children, cor = TINTA, anchor = "middle", tam = 11,
 }
 
 /**
- * Anima o lápis: cada [data-passo] é desenhado quando ele mesmo entra na tela, numa fila (um de cada vez, na ordem da página).
- * O texto aparece assim que o passo entra na fila; passo que já passou para cima aparece pronto, sem esperar.
+ * Anima o lápis: cada [data-passo] é desenhado quando ele mesmo chega a uns 3/4 da altura da tela, numa fila (um de cada vez, na ordem da página).
+ * O texto de cada passo só aparece quando o lápis começa aquele desenho; passo que já saiu (ou quase saiu) por cima aparece pronto, sem esperar.
  * Sem JS ou com "reduzir movimento", tudo já aparece pronto.
  */
 export function useLapis(ref: RefObject<HTMLElement>) {
@@ -48,20 +48,22 @@ export function useLapis(ref: RefObject<HTMLElement>) {
       passo.querySelectorAll<SVGElement>("[data-surge]").forEach((s) => { s.style.opacity = "1"; });
       const l = passo.querySelector<SVGElement>("[data-lapis]"); if (l) l.style.opacity = "0";
     };
-    const passou = (passo: HTMLElement) => passo.getBoundingClientRect().bottom < 0;
+    const passou = (passo: HTMLElement) => passo.getBoundingClientRect().bottom < innerHeight * 0.15;
 
     async function desenha(passo: HTMLElement) {
       const lapis = passo.querySelector<SVGGElement>("[data-lapis]");
+      if (passou(passo)) return pronto(passo);
+      passo.dataset.on = "1"; // o texto aparece junto com o começo do desenho
       for (const item of passo.querySelectorAll<SVGGraphicsElement>("[data-traco],[data-surge]")) {
         if (parado) return;
         if (passou(passo)) return pronto(passo);
         if (item.hasAttribute("data-surge")) {
           const b = item.getBBox(); poeLapis(lapis, b.x + b.width / 2, b.y + b.height / 2);
           item.style.transition = "opacity .25s"; item.style.opacity = "1";
-          await espera(item.hasAttribute("data-rapido") ? 25 : 70);
+          await espera(item.hasAttribute("data-rapido") ? 15 : 45);
           continue;
         }
-        const g = item as SVGGeometryElement, l = g.getTotalLength(), dur = Math.min(700, Math.max(140, l * 2.2));
+        const g = item as SVGGeometryElement, l = g.getTotalLength(), dur = Math.min(550, Math.max(120, l * 1.6));
         const t0 = await quadro();
         for (let t = t0; ; t = await quadro()) {
           if (parado) return;
@@ -72,7 +74,7 @@ export function useLapis(ref: RefObject<HTMLElement>) {
         }
       }
       if (lapis) { lapis.style.transition = "opacity .3s"; lapis.style.opacity = "0"; }
-      await espera(450); // pausa para o olhar acompanhar até o próximo desenho
+      await espera(250); // pausa para o olhar acompanhar até o próximo desenho
     }
     async function roda() {
       if (rodando) return;
@@ -86,13 +88,13 @@ export function useLapis(ref: RefObject<HTMLElement>) {
       for (const p of passos.slice(0, passos.indexOf(passo) + 1)) {
         if (vistos.has(p)) continue;
         vistos.add(p); io.unobserve(p);
-        if (passou(p)) pronto(p); else { p.dataset.on = "1"; fila.push(p); }
+        if (passou(p)) pronto(p); else fila.push(p);
       }
       roda();
     };
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting || e.boundingClientRect.bottom < 0) entra(e.target as HTMLElement);
-    }), { threshold: 0, rootMargin: "0px 0px -12% 0px" });
+    }), { threshold: 0, rootMargin: "0px 0px -25% 0px" });
     passos.forEach((p) => io.observe(p));
     return () => { parado = true; io.disconnect(); };
   }, []);
