@@ -1,12 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getPublico } from "@/lib/db";
-import { prioridade } from "@/lib/rules";
+import { prioridade, nomeBairro } from "@/lib/rules";
 import MapaDados from "@/components/landing/MapaDados";
 import Letreiro from "@/components/landing/Letreiro";
 import Revela from "@/components/landing/Revela";
 import ComoFunciona from "@/components/landing/ComoFunciona";
-import Quadros, { type DadosIndice } from "@/components/landing/Quadros";
+import type { DadosIndice } from "@/components/landing/Quadros";
 import DemoTelas from "@/components/landing/DemoTelas";
 import Video from "@/components/landing/Video";
 
@@ -21,9 +21,8 @@ export default async function Home() {
   const pctAreas = Math.round((meta.n_em_areas / meta.n_total) * 100);
   const periodo = `${mes(meta.periodo_inicio)} a ${mes(meta.periodo_fim)} de ${meta.periodo_fim.slice(0, 4)}`;
 
-  // Dados reais para os quadros que desenham as contas: a área em 1º lugar
+  // Dados reais para a conta passo a passo da etapa 3: a área em 1º lugar
   const ex = areas[0];
-  const nomeEx = ex.bairro.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
   const fila = (vs: number[], x: number) => { const s = [...vs].sort((p, q) => p - q); return { s, pos: s.lastIndexOf(x) }; };
   const vol = fila(areas.map((a) => a.n), ex.n), conc = fila(areas.map((a) => a.concentracao_pico), ex.concentracao_pico);
   const ocEx = ocorrencias.filter((o) => o.area_id === ex.id);
@@ -31,16 +30,17 @@ export default async function Home() {
   const periodos = PERIODOS.map(([k, nome]) => ({ nome, n: ocEx.filter((o) => o.periodo === k).length }));
   const comHorario = periodos.reduce((t, p) => t + p.n, 0);
   const dados: DadosIndice | null = ex.periodo_pico === "não disponível" || !comHorario ? null : {
-    nome: nomeEx, n: ex.n, total: areas.length, vol: vol.s, posVol: vol.pos, conc: conc.s, posConc: conc.pos,
-    periodos, comHorario, semHorario: ex.n - comHorario, pico: PERIODOS.find(([k]) => k === ex.periodo_pico)?.[1] ?? ex.periodo_pico, picoFrase: ex.periodo_pico.toLowerCase().replace(/^a /, "à "),
+    nome: nomeBairro(ex.bairro), n: ex.n, vol: vol.s, posVol: vol.pos, conc: conc.s, posConc: conc.pos,
+    periodos, comHorario, semHorario: ex.n - comHorario,
+    picoN: ocEx.filter((o) => o.periodo === ex.periodo_pico).length, picoFrase: ex.periodo_pico.toLowerCase().replace(/^a /, "à "),
     pct: Math.round(ex.concentracao_pico), sv: ex.score_volume, st: ex.score_temporal, indice: ex.indice, prioridade: prioridade(ex.indice),
   };
 
   const etapas = [
-    { t: "Dados oficiais", d: `Boletins da SSP-SP de Sorocaba, de ${periodo}. Ficam só furto, roubo e tráfico com coordenada válida: ${n(meta.n_total)} ocorrências.` },
-    { t: "Áreas de atenção", d: `O DBSCAN junta as ocorrências que estão perto umas das outras. Resultado: ${meta.n_areas} áreas que reúnem ${pctAreas}% dos casos.` },
-    { t: "Índice de Atenção", d: "Nota de 0 a 100 que compara as áreas entre si. Metade dos pontos vem do volume de casos, a outra metade de quanto eles se concentram num mesmo período do dia (madrugada, manhã, tarde ou noite). As duas partes aparecem no painel." },
-    { t: "Ação dos órgãos públicos", d: "Regras escritas sugerem reforço ou monitoramento e encaminham para segurança, Obras, Iluminação ou Mobilidade. Quem está em campo relata, o gestor vistoria e abre a ordem." },
+    { t: "Dados oficiais", d: `Boletins de ocorrência da SSP-SP em Sorocaba, de ${periodo}. Ficam só furto, roubo e tráfico com o local marcado no mapa: ${n(meta.n_total)} ocorrências.` },
+    { t: "Áreas de atenção", d: `Um método chamado DBSCAN junta as ocorrências que estão perto umas das outras. Resultado: ${meta.n_areas} áreas que reúnem ${pctAreas}% dos casos.` },
+    { t: "Índice de Atenção", d: "Cada área recebe uma nota de 0 a 100 que põe as áreas em ordem: quanto maior, mais cedo ela merece atenção. Não é chance de crime. Metade da nota vem do volume de casos (onde agir) e metade do horário em que eles se repetem (quando agir)." },
+    { t: "Ação dos órgãos públicos", d: "Regras fixas sugerem reforço ou acompanhamento e indicam quem resolve: Segurança, Obras, Iluminação ou Mobilidade. Quem está na rua avisa, o gestor confere no local e abre a ordem de serviço." },
   ];
 
   return (
@@ -112,8 +112,7 @@ export default async function Home() {
         <Revela>
           <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Do boletim de ocorrência à ordem de serviço</h2>
         </Revela>
-        <ComoFunciona etapas={etapas} />
-        {dados && <Quadros d={dados} />}
+        <ComoFunciona etapas={etapas} dados={dados} />
       </section>
 
       {/* As duas entradas, com as telas reais do app */}
