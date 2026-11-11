@@ -20,11 +20,20 @@ export default async function Home() {
   const pctAreas = Math.round((meta.n_em_areas / meta.n_total) * 100);
   const periodo = `${mes(meta.periodo_inicio)} a ${mes(meta.periodo_fim)} de ${meta.periodo_fim.slice(0, 4)}`;
 
+  // Exemplo real do cálculo do índice: a área em 1º lugar
+  const ex = areas[0];
+  const nomeBairro = ex.bairro.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
+  const iguaisVol = areas.filter((a) => a.n <= ex.n).length;
+  const iguaisHor = areas.filter((a) => a.concentracao_pico <= ex.concentracao_pico).length;
+  const exemplo = ex.periodo_pico === "não disponível" ? "" :
+    ` Exemplo: ${nomeBairro} tem ${n(ex.n)} casos, mais do que ou igual a ${iguaisVol} das ${areas.length} áreas, então volume = ${iguaisVol}/${areas.length} × 50 = ${ex.score_volume}. Dos casos com horário registrado, ${Math.round(ex.concentracao_pico)}% foram ${ex.periodo_pico.toLowerCase()}, concentração maior ou igual à de ${iguaisHor} áreas: horário = ${ex.score_temporal}. Índice: ${ex.score_volume} + ${ex.score_temporal} = ${ex.indice}.`;
+
   const etapas = [
     { t: "Dados oficiais", d: `Boletins da SSP-SP de Sorocaba, de ${periodo}. Ficam só furto, roubo e tráfico com coordenada válida: ${n(meta.n_total)} ocorrências.` },
     { t: "Áreas de atenção", d: `O DBSCAN junta as ocorrências que estão perto umas das outras. Resultado: ${meta.n_areas} áreas que reúnem ${pctAreas}% dos casos.`,
-      extra: "O que é o DBSCAN? Um método que procura aglomerados no mapa. Em volta de cada ocorrência, ele olha um raio de 250 m: se houver pelo menos 20 casos ali, forma um grupo, que vai crescendo pelos vizinhos. Casos isolados ficam de fora." },
-    { t: "Índice de Atenção", d: "Nota de 0 a 100: metade vem do volume da área, metade de quanto os casos se concentram num período do dia. As duas partes aparecem no painel." },
+      extra: "O que é o DBSCAN? Um método que procura aglomerados no mapa sem precisar saber antes quantos existem. Ele desenha um círculo de 250 m em volta de cada ocorrência. Se dentro do círculo houver pelo menos 20 casos, aquele ponto é o centro de um grupo. Os vizinhos entram no grupo e, se também tiverem 20 casos por perto, o grupo continua crescendo a partir deles. Casos sem vizinhança suficiente são tratados como isolados e não formam área." },
+    { t: "Índice de Atenção", d: "Nota de 0 a 100 que compara as áreas entre si. Metade dos pontos vem do volume de casos, a outra metade de quanto eles se concentram num mesmo período do dia (madrugada, manhã, tarde ou noite). As duas partes aparecem no painel.",
+      extra: `Como se calcula? Cada parte vale até 50 e mede quantas áreas ficam abaixo ou empatadas com aquela.${exemplo} A partir de 70 a prioridade é alta; de 45 a 69, média; abaixo de 45, baixa.` },
     { t: "Ação dos órgãos públicos", d: "Regras escritas sugerem reforço ou monitoramento e encaminham para segurança, Obras, Iluminação ou Mobilidade. Quem está em campo relata, o gestor vistoria e abre a ordem." },
   ];
 
