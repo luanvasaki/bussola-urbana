@@ -35,7 +35,7 @@ export function detalheDbscan(): Detalhe {
     paineis: [
       {
         titulo: "Um círculo de 250 m",
-        texto: "Para cada ocorrência, o DBSCAN conta os casos num raio de 250 m (uns 3 minutos a pé), contando ela mesma. Com 20 ou mais, ela vira o centro de um grupo. Exigir 20 evita marcar uma área por acaso.",
+        texto: "Para cada ocorrência, o DBSCAN conta quantos casos aconteceram num raio de 250 m em volta dela. Se forem 20 casos ou mais, aquele ponto vira o centro de um grupo. Exigir pelo menos 20 casos evita marcar como área um lugar com só alguns casos soltos.",
         alt: "Círculo de 250 metros em volta de uma ocorrência, com 22 casos dentro. Como 22 é pelo menos 20, ela vira centro de um grupo.",
         desenho: <>
           {pontos(espiral(120, 74, 46, 21))}
@@ -43,7 +43,7 @@ export function detalheDbscan(): Detalhe {
           {circulo(120, 74, 54)}
           <path {...traco} stroke={MENTA} strokeWidth="1.4" d="M120 74 H174" />
           <T x={179} y={70} cor={MENTA} anchor="start">250 m</T>
-          <T x={120} y={158} cor={VERMELHO} tam={13}>22 casos (com ela) ≥ 20 → centro</T>
+          <T x={120} y={158} cor={VERMELHO} tam={13}>22 casos ≥ 20 → centro</T>
         </>,
       },
       {
