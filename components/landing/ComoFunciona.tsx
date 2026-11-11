@@ -86,7 +86,7 @@ function PassoAPasso({ etapa, det }: { etapa: number; det: Detalhe }) {
       <ol className={`mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 ${det.colunas}`}>
         {det.paineis.map((p, i) => (
           <li key={p.titulo} data-passo="">
-            <svg viewBox="0 0 240 170" role="img" aria-label={p.alt} className="w-full rounded-md border-[1.5px] border-forest/15 bg-white/70">
+            <svg viewBox={`0 0 240 ${p.alto ?? 170}`} role="img" aria-label={p.alt} className="w-full rounded-md border-[1.5px] border-forest/15 bg-white/70">
               {p.desenho}
               <Lapis />
             </svg>
@@ -98,6 +98,17 @@ function PassoAPasso({ etapa, det }: { etapa: number; det: Detalhe }) {
           </li>
         ))}
       </ol>
+      <div className="mt-12 grid gap-6 border-t border-forest/15 pt-8 lg:grid-cols-2 lg:gap-10">
+        <div>
+          <p className="rotulo text-forest/70">De onde vem</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-forest/75 lg:text-base">{det.fonte}</p>
+        </div>
+        <div>
+          <p className="rotulo text-forest/70">No programa</p>
+          <pre className="mt-2 overflow-x-auto rounded-md bg-forest px-4 py-3 text-[13px] leading-relaxed text-white"><code>{det.codigo.linhas}</code></pre>
+          <p className="mt-3 text-[15px] leading-relaxed text-forest/75 lg:text-base [&_code]:rounded [&_code]:bg-forest/10 [&_code]:px-1 [&_code]:text-[0.9em]">{det.codigo.explica}</p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -13,8 +13,12 @@ export type DadosIndice = {
   sv: number; st: number; indice: number; prioridade: string;
 };
 
-export type Painel = { titulo: string; texto: React.ReactNode; alt: string; desenho: React.ReactNode };
-export type Detalhe = { titulo: string; intro: string; colunas: string; paineis: Painel[] };
+export type Painel = { titulo: string; texto: React.ReactNode; alt: string; desenho: React.ReactNode; alto?: number };
+export type Detalhe = {
+  titulo: string; intro: string; colunas: string; paineis: Painel[];
+  fonte: React.ReactNode;                                   // de onde vem o método
+  codigo: { linhas: string; explica: React.ReactNode };     // a linha de verdade do programa (analytics/pipeline.py)
+};
 
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const T = (p: React.ComponentProps<typeof Nota>) => <Nota tam={12.5} {...p} />;
@@ -24,6 +28,11 @@ const espiral = (cx: number, cy: number, r: number, k: number, giro = 0) =>
 const pontos = (ps: number[][]) => ps.map(([x, y], i) => <circle key={i} data-surge="" data-rapido="" cx={x} cy={y} r="3" fill={TINTA} />);
 const circulo = (cx: number, cy: number, r: number, cor = MENTA) => <path {...traco} stroke={cor} d={`M${cx + r} ${cy} a${r} ${r} 0 1 1 ${-2 * r} 0 a${r} ${r} 0 1 1 ${2 * r} 0`} />;
 // "34 ÷ 37 × 50 ≈ 46": usa "=" só quando a conta é exata
+// nome do eixo vertical, escrito de baixo para cima
+const EixoY = ({ y, children }: { y: number; children: string }) =>
+  <text data-surge="" x={0} y={0} transform={`translate(9 ${y}) rotate(-90)`} textAnchor="middle" fontSize="10" fill={TINTA} opacity="0.75">{children}</text>;
+const EixoX = ({ y, children }: { y: number; children: string }) =>
+  <text data-surge="" x={120} y={y} textAnchor="middle" fontSize="10" fill={TINTA} opacity="0.75">{children}</text>;
 const conta = (k: number, N: number, r: number) => `${k} ÷ ${N} × 50 ${Math.abs((k / N) * 50 - r) < 0.05 ? "=" : "≈"} ${r}`;
 
 export function detalheDbscan(): Detalhe {
@@ -32,6 +41,11 @@ export function detalheDbscan(): Detalhe {
     titulo: "Como o DBSCAN forma uma área",
     intro: "Desenho de exemplo, com pontos inventados. Na etapa 3 os números são reais.",
     colunas: "lg:grid-cols-3",
+    fonte: <>O DBSCAN não foi inventado por nós: foi publicado por Martin Ester e colegas em 1996 (congresso KDD-96) e é muito usado para achar concentrações em mapas. Usamos a versão pronta da biblioteca scikit-learn, em Python. Os dois números, 250 m e 20 casos, foram escolhidos pelo grupo, não calculados por uma fórmula. Também testamos 200 m e 300 m, e 250 m ficou como meio-termo.</>,
+    codigo: {
+      linhas: "DBSCAN(eps=0.25, min_samples=20).fit(X)",
+      explica: <>Esta é a linha do nosso programa que faz tudo o que está acima. <code>eps=0.25</code> é o raio (0,25 km = 250 m), <code>min_samples=20</code> é o mínimo de casos e <code>X</code> são as posições das ocorrências. O computador testa todas as ocorrências de uma vez, em poucos segundos.</>,
+    },
     paineis: [
       {
         titulo: "Um círculo de 250 m",
@@ -82,13 +96,15 @@ export function detalheDbscan(): Detalhe {
 
 // Fila de barras em ordem crescente: a área do exemplo em vermelho, uma chave embaixo das que ficam abaixo ou empatadas
 // e outra em cima das que ficam à frente dela
-function Fila({ valores, pos, altura, rotulo, nome, frente, txtConta, cor }: { valores: number[]; pos: number; altura: (v: number) => number; rotulo: string; nome: string; frente: string; txtConta: string; cor: string }) {
-  const N = valores.length, passo = 200 / N, x = (i: number) => r1(20 + i * passo), larg = r1(passo * 0.7);
+function Fila({ valores, pos, altura, rotulo, nome, frente, txtConta, cor, eixoX, eixoY }: { valores: number[]; pos: number; altura: (v: number) => number; rotulo: string; nome: string; frente: string; txtConta: string; cor: string; eixoX: string; eixoY: string }) {
+  const N = valores.length, passo = 200 / N, x = (i: number) => r1(22 + i * passo), larg = r1(passo * 0.7);
   const xe = r1(x(pos) + larg / 2), topo = r1(118 - altura(valores[pos])), resto = N - 1 - pos;
   return <>
-    <path {...traco} d="M16 118 H224" />
+    <path {...traco} d="M18 118 H224 M18 118 V26" />
+    <EixoY y={72}>{eixoY}</EixoY>
+    <EixoX y={133}>{eixoX}</EixoX>
     {valores.map((v, i) => i !== pos &&
-      <rect key={i} data-surge="" data-rapido="" x={x(i)} y={r1(118 - altura(v))} width={larg} height={r1(altura(v))} fill={TINTA} opacity={i < pos ? 0.75 : 0.4} />)}
+      <rect key={i} data-surge="" data-rapido="" x={x(i)} y={r1(118 - altura(v))} width={larg} height={r1(altura(v))} fill={TINTA} opacity={i < pos ? 0.75 : 0.45} />)}
     <rect data-surge="" x={x(pos)} y={topo} width={larg} height={r1(118 - topo)} fill={VERMELHO} />
     <path {...traco} stroke={VERMELHO} strokeWidth="1.4" d={`M${xe} ${Math.min(topo - 4, 70)} V${topo - 3}`} />
     <T x={xe + 3} y={Math.min(topo - 8, 66)} cor={VERMELHO} anchor="end">{nome}</T>
@@ -96,9 +112,9 @@ function Fila({ valores, pos, altura, rotulo, nome, frente, txtConta, cor }: { v
       <path {...traco} strokeWidth="1.4" d={`M${x(pos + 1)} 22 v-5 H${r1(x(N - 1) + larg)} v5`} />
       <T x={224} y={12} anchor="end" tam={11}>{frente}</T>
     </>}
-    <path {...traco} stroke={cor} d={`M${x(0)} 124 v5 H${r1(x(pos) + larg)} v-5`} />
-    <T x={r1((x(0) + x(pos) + larg) / 2)} y={144} cor={cor} tam={11.5}>{rotulo}</T>
-    <T x={120} y={164} cor={cor} tam={14}>{txtConta}</T>
+    <path {...traco} stroke={cor} d={`M${x(0)} 140 v5 H${r1(x(pos) + larg)} v-5`} />
+    <T x={r1((x(0) + x(pos) + larg) / 2)} y={159} cor={cor} tam={11.5}>{rotulo}</T>
+    <T x={120} y={182} cor={cor} tam={14}>{txtConta}</T>
   </>;
 }
 
@@ -113,22 +129,31 @@ export function detalheIndice(d: DadosIndice): Detalhe {
     titulo: "A conta da área em 1º lugar",
     intro: `A área fica perto da ${d.nome}. A nota mostra onde agir primeiro; ela não quer dizer que o bairro seja perigoso.`,
     colunas: "",
+    fonte: <>A ideia de comparar pela posição na fila se chama <i>percentil</i> e é estatística comum. A forma de juntar as duas partes (metade volume, metade horário) e os cortes 45 e 70 foram propostos pelo grupo; ainda não foram testados na prática por uma prefeitura. Os casos vêm do portal de dados abertos da SSP-SP.</>,
+    codigo: {
+      linhas: `volume  = round(lugar_na_fila_casos   / ${N} * 50)\nhorario = round(lugar_na_fila_horario / ${N} * 50)\nindice  = volume + horario`,
+      explica: <>As linhas do programa que fazem a conta acima, com nomes simplificados para facilitar a leitura. Para a área do exemplo, os dois lugares na fila são {iguaisVol} e {iguaisConc}. É automático: um programa em Python (<code>analytics/pipeline.py</code>) lê a planilha da SSP-SP, acha as áreas e calcula a nota de todas elas de uma vez. A única parte manual é baixar a planilha nova da SSP e rodar dois comandos; depois disso o site mostra os números novos sozinho, em até uma hora.</>,
+    },
     paineis: [
       {
         titulo: "Volume: em que lugar da fila ela fica?",
-        texto: <>As {N} áreas fazem uma fila, da que tem menos casos para a que tem mais. {iguaisVol} delas têm {fmt(d.n)} casos ou menos, contando esta. Então volume = {conta(iguaisVol, N, d.sv)} (× 50 porque o volume vale metade da nota). O que conta é o lugar na fila, não o número de casos.</>,
+        texto: <>As {N} áreas fazem uma fila, da que tem menos casos para a que tem mais. {iguaisVol} delas têm {fmt(d.n)} casos ou menos, contando esta. Então volume = {conta(iguaisVol, N, d.sv)} (× 50 porque o volume vale metade da nota). O que conta é o lugar na fila, não o número de casos.{N - iguaisVol > 0 && <> As {N - iguaisVol} barras mais claras, à direita, não foram descartadas: são as áreas com mais casos do que esta. Elas só não entram nesta contagem, que pergunta quantas áreas ficam atrás ou empatadas. Mesmo com mais casos, essas {N - iguaisVol} ficaram com nota final menor, porque os casos delas se espalham mais pelos horários do dia.</>}</>,
         alt: `Fila com as ${N} áreas em ordem de número de casos. A área do exemplo, com ${d.n} casos, está em vermelho; ${iguaisVol} áreas têm ${d.n} casos ou menos. ${conta(iguaisVol, N, d.sv)}.`,
-        desenho: <Fila valores={d.vol} pos={d.posVol} altura={(v) => 4 + 86 * (v / maxV)} nome={d.nome} cor={MENTA}
+        alto: 192,
+        desenho: <Fila valores={d.vol} pos={d.posVol} altura={(v) => 4 + 86 * (v / maxV)} nome={d.nome} cor={MENTA} eixoY="casos" eixoX={`as ${N} áreas, em ordem de casos →`}
           frente={`${N - iguaisVol} com mais`} rotulo={`${iguaisVol} com ${fmt(d.n)} ou menos`} txtConta={conta(iguaisVol, N, d.sv)} />,
       },
       {
         titulo: "Horário: quando mais acontece",
         texto: <>Só contam os casos com horário anotado: {d.comHorario} dos {fmt(d.n)}. Nos outros {d.semHorario} (barra tracejada), o boletim diz &ldquo;hora incerta&rdquo;. Dos {d.comHorario}, {d.picoN} foram {d.picoFrase}: {d.pct}%. Quanto maior esse número, mais os casos se repetem no mesmo horário.</>,
         alt: `Barras com os casos por período do dia: ${d.periodos.map((p) => `${p.nome} ${p.n}`).join(", ")}, e ${d.semHorario} sem hora, que ficam fora da conta. ${d.picoN} de ${d.comHorario} dá ${d.pct}%.`,
+        alto: 192,
         desenho: <>
-          <path {...traco} d="M10 118 H230" />
+          <path {...traco} d="M18 118 H230 M18 118 V30" />
+          <EixoY y={74}>casos</EixoY>
+          <EixoX y={152}>período do dia</EixoX>
           {barras.map((p, i) => {
-            const x = 14 + i * 44, h = r1(4 + 74 * (p.n / maxP)), semHora = i === barras.length - 1, ehPico = p === pico;
+            const x = 24 + i * 42, h = r1(4 + 74 * (p.n / maxP)), semHora = i === barras.length - 1, ehPico = p === pico;
             return <g key={p.nome}>
               {semHora
                 ? <rect data-surge="" x={x} y={r1(118 - h)} width="30" height={h} fill="none" stroke={TINTA} strokeWidth="1.6" strokeDasharray="4 3" opacity="0.6" />
@@ -137,20 +162,22 @@ export function detalheIndice(d: DadosIndice): Detalhe {
               <T x={x + 15} y={135} tam={10} reto>{curto[p.nome] ?? p.nome}</T>
             </g>;
           })}
-          <T x={120} y={164} cor={LARANJA} tam={14}>{`${d.picoN} ÷ ${d.comHorario} ≈ ${d.pct}%`}</T>
+          <T x={120} y={182} cor={LARANJA} tam={14}>{`${d.picoN} ÷ ${d.comHorario} ≈ ${d.pct}%`}</T>
         </>,
       },
       {
         titulo: "Horário: de novo, a fila",
-        texto: <>Agora a fila é pelo horário. {iguaisConc} das {N} áreas têm {d.pct}% ou menos. Então horário = {conta(iguaisConc, N, d.st)}.</>,
+        texto: <>Agora a fila é pelo horário. {iguaisConc} das {N} áreas têm {d.pct}% ou menos. Então horário = {conta(iguaisConc, N, d.st)}.{N - iguaisConc > 0 && <> De novo, as {N - iguaisConc} mais claras não saem da conta: concentram ainda mais casos num só horário, mas têm menos casos no total, e por isso somaram menos.</>}</>,
         alt: `Fila com as ${N} áreas em ordem de concentração no horário. ${iguaisConc} têm ${d.pct}% ou menos. ${conta(iguaisConc, N, d.st)}.`,
-        desenho: <Fila valores={d.conc} pos={d.posConc} altura={(v) => 4 + 86 * (v / maxC)} nome={`${d.pct}%`} cor={LARANJA}
+        alto: 192,
+        desenho: <Fila valores={d.conc} pos={d.posConc} altura={(v) => 4 + 86 * (v / maxC)} nome={`${d.pct}%`} cor={LARANJA} eixoY="% no pico" eixoX={`as ${N} áreas, em ordem de % no pico →`}
           frente={`${N - iguaisConc} com mais`} rotulo={`${iguaisConc} com ${d.pct}% ou menos`} txtConta={conta(iguaisConc, N, d.st)} />,
       },
       {
         titulo: "A soma dá a nota",
         texto: <>Volume mais horário: {d.sv} + {d.st} = <b>{d.indice}</b>. Nota 70 ou mais: prioridade alta. De 45 a 69: média. Abaixo de 45: baixa. Alta quer dizer que a área está entre as que mais pedem atenção em Sorocaba no período; é uma comparação entre áreas, não uma medida de perigo.</>,
         alt: `${d.sv} mais ${d.st} dá ${d.indice}. Numa régua de 0 a 100, com baixa até 44, média de 45 a 69 e alta a partir de 70, a nota fica em prioridade ${d.prioridade.toLowerCase()}.`,
+        alto: 192,
         desenho: <>
           <text data-surge="" x="120" y="44" textAnchor="middle" fontSize="24" fontWeight="700" fontStyle="italic" style={{ fontFamily: "var(--f-display), Georgia, serif" }}>
             <tspan fill={MENTA}>{d.sv}</tspan><tspan fill={LARANJA}> + {d.st}</tspan><tspan fill={VERMELHO}> = {d.indice}</tspan>
@@ -161,7 +188,8 @@ export function detalheIndice(d: DadosIndice): Detalhe {
           <T x={65} y={124} tam={12}>baixa</T><T x={135} y={124} cor={LARANJA} tam={12}>média</T><T x={190} y={124} cor={VERMELHO} tam={12}>alta</T>
           <T x={20} y={142} tam={11} reto>0</T><T x={110} y={142} tam={11} reto>45</T><T x={160} y={142} tam={11} reto>70</T><T x={220} y={142} tam={11} reto>100</T>
           <path {...traco} stroke={VERMELHO} strokeWidth="2.6" d={`M${20 + 2 * d.indice} 58 V96 M${14 + 2 * d.indice} 88 L${20 + 2 * d.indice} 96 L${26 + 2 * d.indice} 88`} />
-          <T x={120} y={166} cor={VERMELHO} tam={13}>{`prioridade ${d.prioridade.toLowerCase()}`}</T>
+          <EixoX y={158}>nota de 0 a 100</EixoX>
+          <T x={120} y={182} cor={VERMELHO} tam={13}>{`prioridade ${d.prioridade.toLowerCase()}`}</T>
         </>,
       },
     ],
