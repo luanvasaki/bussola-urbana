@@ -41,7 +41,7 @@ export function detalheDbscan(): Detalhe {
     titulo: "Como o DBSCAN forma uma área",
     intro: "Desenho de exemplo, com pontos inventados. Na etapa 3 os números são reais.",
     colunas: "lg:grid-cols-3",
-    fonte: <>O DBSCAN não foi inventado por nós: foi publicado por Martin Ester e colegas em 1996 (congresso KDD-96) e é muito usado para achar concentrações em mapas. Usamos a versão pronta da biblioteca scikit-learn, em Python. Os dois números, 250 m e 20 casos, foram escolhidos pelo grupo, não calculados por uma fórmula. Também testamos 200 m e 300 m, e 250 m ficou como meio-termo.</>,
+    fonte: <>O DBSCAN não foi inventado por nós: foi publicado por Martin Ester e colegas em 1996 (congresso KDD-96) e é muito usado para achar concentrações em mapas. Usamos a versão pronta da biblioteca scikit-learn, em Python.</>,
     codigo: {
       linhas: "DBSCAN(eps=0.25, min_samples=20).fit(X)",
       explica: <>Esta é a linha do nosso programa que faz tudo o que está acima. <code>eps=0.25</code> é o raio (0,25 km = 250 m), <code>min_samples=20</code> é o mínimo de casos e <code>X</code> são as posições das ocorrências. O computador testa todas as ocorrências de uma vez, em poucos segundos.</>,
@@ -129,7 +129,7 @@ export function detalheIndice(d: DadosIndice): Detalhe {
     titulo: "A conta da área em 1º lugar",
     intro: `A área fica perto da ${d.nome}. A nota mostra onde agir primeiro; ela não quer dizer que o bairro seja perigoso.`,
     colunas: "",
-    fonte: <>A ideia de comparar pela posição na fila se chama <i>percentil</i> e é estatística comum. A forma de juntar as duas partes (metade volume, metade horário) e os cortes 45 e 70 foram propostos pelo grupo; ainda não foram testados na prática por uma prefeitura. Os casos vêm do portal de dados abertos da SSP-SP.</>,
+    fonte: <>A ideia de comparar pela posição na fila se chama <i>percentil</i> e é estatística comum. Os casos vêm do portal de dados abertos da SSP-SP.</>,
     codigo: {
       linhas: `volume  = round(lugar_na_fila_casos   / ${N} * 50)\nhorario = round(lugar_na_fila_horario / ${N} * 50)\nindice  = volume + horario`,
       explica: <>As linhas do programa que fazem a conta acima, com nomes simplificados para facilitar a leitura. Para a área do exemplo, os dois lugares na fila são {iguaisVol} e {iguaisConc}. É automático: um programa em Python (<code>analytics/pipeline.py</code>) lê a planilha da SSP-SP, acha as áreas e calcula a nota de todas elas de uma vez. A única parte manual é baixar a planilha nova da SSP e rodar dois comandos; depois disso o site mostra os números novos sozinho, em até uma hora.</>,

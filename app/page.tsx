@@ -113,6 +113,33 @@ export default async function Home() {
           <h2 className="r max-w-[20ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Do boletim de ocorrência à ordem de serviço</h2>
         </Revela>
         <ComoFunciona etapas={etapas} dados={dados} />
+
+        {/* Fim da explicação: QR para abrir o app no celular (no celular, que já está no site, só os botões) */}
+        <Revela>
+          <div className="r mt-20 flex flex-col items-center gap-8 rounded-lg bg-forest p-8 text-mint sm:flex-row sm:gap-12 sm:p-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/qrcode.svg" alt="QR code que abre o site da Bússola Urbana no celular" width={200} height={200} className="hidden h-48 w-48 shrink-0 rounded-md bg-white p-2 sm:block lg:h-56 lg:w-56" />
+            <div>
+              <p className="rotulo text-mint/70">Agora é a sua vez</p>
+              <h3 className="mt-2 font-display text-3xl font-bold lg:text-4xl">Use o app<span className="hidden sm:inline"> no seu celular</span></h3>
+              <p className="mt-3 max-w-[48ch] text-lg leading-relaxed text-mint/80">
+                <span className="hidden sm:inline">Aponte a câmera do celular para o código e escolha uma entrada: </span>
+                <span className="sm:hidden">Escolha uma entrada: </span>
+                gestor, para ver o painel e as áreas, ou em campo, para enviar um relato. Não precisa instalar nada.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href="/gestor" className="bu-entrada bg-mint text-forest hover:bg-mint-100">
+                  <span className="block font-display text-base font-semibold leading-tight">Entrar como gestor</span>
+                  <span className="block text-xs text-forest/70">Prefeitura e forças de segurança</span>
+                </Link>
+                <Link href="/cidadao" className="bu-entrada border border-mint/35 text-mint hover:border-mint/80">
+                  <span className="block font-display text-base font-semibold leading-tight">Entrar em campo</span>
+                  <span className="block text-xs text-mint/65">Policiais, fiscais e cidadãos</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Revela>
       </section>
 
       {/* As duas entradas, com as telas reais do app */}
