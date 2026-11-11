@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 /**
  * "Do boletim de ocorrência à ordem de serviço": cada etapa tem um desenho feito a lápis.
@@ -8,15 +8,15 @@ import { useEffect, useRef } from "react";
  */
 type Etapa = { t: string; d: string; extra?: string };
 
-const TINTA = "#0d2b20", VERMELHO = "#b91c1c", LARANJA = "#d97706", MENTA = "#1f6b4e";
-const traco = { "data-traco": "", fill: "none", stroke: TINTA, strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+export const TINTA = "#0d2b20", VERMELHO = "#b91c1c", LARANJA = "#d97706", MENTA = "#1f6b4e";
+export const traco = { "data-traco": "", fill: "none", stroke: TINTA, strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
 // Pontos do desenho do DBSCAN: um aglomerado e alguns casos isolados
 const GRUPO = [[118, 78], [104, 70], [130, 66], [110, 92], [134, 90], [98, 84], [124, 104], [142, 76], [112, 58], [146, 100], [92, 98], [150, 62], [86, 72], [128, 116]];
 const ISOLADOS = [[30, 30], [212, 34], [28, 124], [214, 128]];
 const NUCLEO = GRUPO[0];
 
-function Lapis() {
+export function Lapis() {
   // ponta em (0,0); o grupo inteiro é movido para a ponta do traço
   return <g data-lapis="" style={{ opacity: 0 }} aria-hidden="true">
     <g transform="rotate(35)">
@@ -29,8 +29,8 @@ function Lapis() {
   </g>;
 }
 
-function Nota({ x, y, children, cor = TINTA, anchor = "middle" }: { x: number; y: number; children: React.ReactNode; cor?: string; anchor?: "start" | "middle" | "end" }) {
-  return <text data-surge="" x={x} y={y} fill={cor} fontSize="11" fontWeight="600" textAnchor={anchor} fontStyle="italic" style={{ fontFamily: "var(--f-display), Georgia, serif" }}>{children}</text>;
+export function Nota({ x, y, children, cor = TINTA, anchor = "middle", tam = 11 }: { x: number; y: number; children: React.ReactNode; cor?: string; anchor?: "start" | "middle" | "end"; tam?: number }) {
+  return <text data-surge="" x={x} y={y} fill={cor} fontSize={tam} fontWeight="600" textAnchor={anchor} fontStyle="italic" style={{ fontFamily: "var(--f-display), Georgia, serif" }}>{children}</text>;
 }
 
 const DESENHOS = [
@@ -92,10 +92,10 @@ function Seta() {
   </svg>;
 }
 
-export default function ComoFunciona({ etapas }: { etapas: Etapa[] }) {
-  const raiz = useRef<HTMLOListElement>(null);
+/** Anima o lápis: desenha os traços e faz surgir os pontos de cada [data-passo], um depois do outro, quando o bloco entra na tela. */
+export function useLapis(ref: RefObject<HTMLElement>) {
   useEffect(() => {
-    const el = raiz.current;
+    const el = ref.current;
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const tracos = [...el.querySelectorAll<SVGGeometryElement>("[data-traco]")];
     tracos.forEach((t) => { const l = t.getTotalLength(); t.style.strokeDasharray = `${l} ${l}`; t.style.strokeDashoffset = `${l}`; });
@@ -137,6 +137,11 @@ export default function ComoFunciona({ etapas }: { etapas: Etapa[] }) {
     io.observe(el);
     return () => { parado = true; io.disconnect(); };
   }, []);
+}
+
+export default function ComoFunciona({ etapas }: { etapas: Etapa[] }) {
+  const raiz = useRef<HTMLOListElement>(null);
+  useLapis(raiz);
 
   return (
     <ol ref={raiz} className="bu-como mt-14 flex flex-col items-center gap-4 lg:flex-row lg:items-start lg:gap-2">
