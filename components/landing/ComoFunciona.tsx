@@ -98,12 +98,12 @@ function PassoAPasso({ etapa, det }: { etapa: number; det: Detalhe }) {
           </li>
         ))}
       </ol>
-      <div className="mt-12 grid gap-6 border-t border-forest/15 pt-8 lg:grid-cols-2 lg:gap-10">
-        <div>
+      <div className="mt-12 grid grid-cols-1 gap-6 border-t border-forest/15 pt-8 lg:grid-cols-2 lg:gap-10">
+        <div className="min-w-0">
           <p className="rotulo text-forest/70">De onde vem</p>
           <p className="mt-2 text-[15px] leading-relaxed text-forest/75 lg:text-base">{det.fonte}</p>
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="rotulo text-forest/70">No programa</p>
           <pre className="mt-2 overflow-x-auto rounded-md bg-forest px-4 py-3 text-[13px] leading-relaxed text-white"><code>{det.codigo.linhas}</code></pre>
           <p className="mt-3 text-[15px] leading-relaxed text-forest/75 lg:text-base [&_code]:rounded [&_code]:bg-forest/10 [&_code]:px-1 [&_code]:text-[0.9em]">{det.codigo.explica}</p>
