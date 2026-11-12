@@ -34,7 +34,7 @@ export function useLapis(ref: RefObject<HTMLElement>) {
     const el = ref.current;
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const passos = [...el.querySelectorAll<HTMLElement>("[data-passo]")];
-    el.querySelectorAll<SVGGeometryElement>("[data-traco]").forEach((t) => { const l = t.getTotalLength(); t.style.strokeDasharray = `${l} ${l}`; t.style.strokeDashoffset = `${l}`; });
+    el.querySelectorAll<SVGGeometryElement>("[data-traco]").forEach((t) => { let l = 0; try { l = t.getTotalLength(); } catch { /* escondido */ } if (!l) l = 2000; t.style.strokeDasharray = `${l} ${l}`; t.style.strokeDashoffset = `${l}`; });
     el.querySelectorAll<SVGElement>("[data-surge]").forEach((s) => { s.style.opacity = "0"; });
     el.dataset.anim = "1";
     let parado = false, rodando = false;
@@ -64,6 +64,7 @@ export function useLapis(ref: RefObject<HTMLElement>) {
           continue;
         }
         const g = item as SVGGeometryElement, l = g.getTotalLength(), dur = Math.min(550, Math.max(120, l * 1.6));
+        g.style.strokeDasharray = `${l} ${l}`; // o comprimento real (o passo pode ter estado escondido na preparação)
         const t0 = await quadro();
         for (let t = t0; ; t = await quadro()) {
           if (parado) return;
@@ -86,7 +87,7 @@ export function useLapis(ref: RefObject<HTMLElement>) {
       if (vistos.has(passo)) return;
       // mantém a ordem: os passos anteriores entram antes (ou aparecem prontos, se já passaram)
       for (const p of passos.slice(0, passos.indexOf(passo) + 1)) {
-        if (vistos.has(p)) continue;
+        if (vistos.has(p) || !p.getClientRects().length) continue; // escondido: espera abrir
         vistos.add(p); io.unobserve(p);
         if (passou(p)) pronto(p); else fila.push(p);
       }

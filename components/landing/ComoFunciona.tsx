@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { traco, Nota, Lapis, useLapis, TINTA, VERMELHO, LARANJA, MENTA } from "./lapis";
 import { detalheDbscan, detalheIndice, type DadosIndice, type Detalhe } from "./Quadros";
 
@@ -77,12 +77,22 @@ function Seta() {
   </div>;
 }
 
+// No celular a conta fica recolhida atrás de um botão (a página fica bem mais curta para quem rola em pé);
+// no computador fica sempre aberta. O conteúdo está sempre no HTML: só muda a visibilidade.
 function PassoAPasso({ etapa, det }: { etapa: number; det: Detalhe }) {
+  const [aberto, setAberto] = useState(false);
+  const id = `passo-a-passo-${etapa}`;
   return (
     <div className="mt-10 rounded-lg border-[1.5px] border-dashed border-forest/30 p-5 sm:p-8">
       <p className="rotulo text-forest/70">Etapa {etapa}, passo a passo</p>
       <h4 className="mt-1 font-display text-2xl font-bold">{det.titulo}</h4>
       <p className="mt-2 max-w-[62ch] text-[15px] leading-relaxed text-forest/75 lg:text-base">{det.intro}</p>
+      <button type="button" aria-expanded={aberto} aria-controls={id} onClick={() => setAberto((a) => !a)}
+        className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-md border-[1.5px] border-forest/40 px-4 py-2.5 font-semibold text-forest hover:border-forest lg:hidden">
+        {aberto ? "Fechar a conta" : `Ver a conta passo a passo (${det.paineis.length} desenhos)`}
+        <svg aria-hidden="true" viewBox="0 0 20 20" className={`h-4 w-4 transition-transform ${aberto ? "rotate-180" : ""}`}><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      <div id={id} className={`${aberto ? "" : "hidden"} lg:block`}>
       <ol className={`mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 ${det.colunas}`}>
         {det.paineis.map((p, i) => (
           <li key={p.titulo} data-passo="">
@@ -108,6 +118,7 @@ function PassoAPasso({ etapa, det }: { etapa: number; det: Detalhe }) {
           <pre className="mt-2 overflow-x-auto rounded-md bg-forest px-4 py-3 text-[13px] leading-relaxed text-white"><code>{det.codigo.linhas}</code></pre>
           <p className="mt-3 text-[15px] leading-relaxed text-forest/75 lg:text-base [&_code]:rounded [&_code]:bg-forest/10 [&_code]:px-1 [&_code]:text-[0.9em]">{det.codigo.explica}</p>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -17,6 +17,15 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
   const [i, setI] = useState(0);
   const [giro, setGiro] = useState<number | null>(null); // ângulo acumulado, evita a agulha dar a volta pelo lado errado
   const [quieto, setQuieto] = useState(false);
+  const [k, setK] = useState(1); // aumenta o rótulo quando o mapa fica pequeno (celular), para o nome continuar legível
+  const svg = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const el = svg.current; if (!el) return;
+    const mede = () => { const r = el.getBoundingClientRect(), sc = Math.min(r.width / W, r.height / H); if (sc > 0) setK(Math.min(2.4, Math.max(1, 17 / (34 * sc)))); };
+    mede();
+    const ro = new ResizeObserver(mede); ro.observe(el);
+    return () => ro.disconnect();
+  }, [W, H]);
 
   const angulo = (a: Alvo) => (Math.atan2(a.y - cy, a.x - cx) * 180) / Math.PI;
 
@@ -93,22 +102,23 @@ export default function MapaVivo({ W, H, cx, cy, alvos, pulsos, ano }: Props) {
   }, [pulsos, W, H]);
 
   const alvo = alvos[i];
-  // Posição do rótulo calculada para nunca sair do mapa: lado com espaço livre e, perto do topo, abaixo do alvo.
-  const largura = Math.max(alvo.nome.length * 19, 310);
+  // Posição do rótulo calculada para nunca sair do mapa. Prefere a direita do alvo: no computador o texto da página
+  // fica sobre o lado esquerdo do mapa. Perto do topo, vai para baixo do alvo.
+  const largura = Math.max(alvo.nome.length * 19, 310) * k;
   const cabeEsq = alvo.x - 32 - largura > 0, cabeDir = alvo.x + 32 + largura < W;
-  const esq = cabeEsq && (alvo.x < cx || !cabeDir);
-  const acima = alvo.y - 96 > 0;
-  const tx = alvo.x + (esq ? -32 : 32), ty1 = acima ? alvo.y - 64 : alvo.y + 52, ty2 = acima ? alvo.y - 32 : alvo.y + 84;
+  const esq = cabeEsq && !cabeDir;
+  const acima = alvo.y - 96 * k > 0;
+  const tx = alvo.x + (esq ? -32 : 32), ty1 = acima ? alvo.y - 32 - 32 * k : alvo.y + 20 + 32 * k, ty2 = acima ? alvo.y - 32 : alvo.y + 20 + 64 * k;
   return (
     <>
       <canvas ref={canvas} aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5] h-full w-full" />
-      <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" overflow="visible" className="pointer-events-none absolute inset-0 z-[5] h-full w-full">
+      <svg ref={svg} viewBox={`0 0 ${W} ${H}`} aria-hidden="true" overflow="visible" className="pointer-events-none absolute inset-0 z-[5] h-full w-full">
         <g key={`l${i}`} className="bu-surge" style={{ animationDelay: quieto ? "0s" : i === 0 ? "2.4s" : "1.3s" }}>
           <line x1={cx} y1={cy} x2={alvo.x} y2={alvo.y} stroke="#eefbf3" strokeOpacity="0.55" strokeWidth="1.6" strokeDasharray="5 6" />
           <circle cx={alvo.x} cy={alvo.y} r="20" fill="none" stroke="#eefbf3" strokeWidth="2.5" />
-          <g textAnchor={esq ? "end" : "start"} paintOrder="stroke" stroke="#0d2b20" strokeWidth="8" strokeLinejoin="round">
-            <text x={tx} y={ty1} fill="#eefbf3" fontSize="34" fontWeight="600" fontFamily="var(--f-display), Georgia, serif">{alvo.nome}</text>
-            <text x={tx} y={ty2} fill="#a7e8c4" fontSize="23">Índice de Atenção {alvo.indice} de 100</text>
+          <g textAnchor={esq ? "end" : "start"} paintOrder="stroke" stroke="#0d2b20" strokeWidth={8 * k} strokeLinejoin="round">
+            <text x={tx} y={ty1} fill="#eefbf3" fontSize={34 * k} fontWeight="600" fontFamily="var(--f-display), Georgia, serif">{alvo.nome}</text>
+            <text x={tx} y={ty2} fill="#a7e8c4" fontSize={23 * k}>Índice de Atenção {alvo.indice} de 100</text>
           </g>
         </g>
         {giro !== null && (

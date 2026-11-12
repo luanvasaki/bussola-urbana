@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getPublico } from "@/lib/db";
+import { preload } from "react-dom";
 import { prioridade, nomeBairro } from "@/lib/rules";
 import MapaDados from "@/components/landing/MapaDados";
 import Letreiro from "@/components/landing/Letreiro";
@@ -16,6 +17,7 @@ const n = (v: number) => v.toLocaleString("pt-BR");
 const mes = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR", { month: "long" });
 
 export default async function Home() {
+  preload("/ruas-sorocaba.svg", { as: "image", fetchPriority: "high" }); // maior elemento da primeira tela
   const { areas, ocorrencias, meta } = await getPublico();
   const altas = areas.filter((a) => prioridade(a.indice) === "Alta").length;
   const pctAreas = Math.round((meta.n_em_areas / meta.n_total) * 100);
@@ -78,15 +80,20 @@ export default async function Home() {
           <div className="relative h-[68svh] min-h-[400px] overflow-hidden lg:absolute lg:inset-0 lg:h-auto lg:min-h-0 lg:overflow-visible">
             <MapaDados ocorrencias={ocorrencias} areas={areas} ano={meta.periodo_fim.slice(0, 4)} />
           </div>
+          <p className="flex flex-wrap gap-x-4 gap-y-1 px-6 py-3 text-sm text-mint/75 lg:hidden">
+            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />alta prioridade</span>
+            <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média</span>
+            <span>cada ponto é uma ocorrência</span>
+          </p>
           <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 hidden w-[46%] bg-gradient-to-r from-forest via-forest/80 to-transparent lg:block" />
-          <div className="relative z-10 order-first px-6 pb-2 pt-7 lg:order-none lg:flex lg:h-full lg:max-w-[40rem] lg:flex-col lg:justify-between lg:px-10 lg:py-12">
+          <div className="relative z-10 order-first px-6 pb-2 pt-7 lg:order-none lg:flex lg:h-full lg:max-w-[40rem] lg:flex-col lg:justify-between lg:gap-6 lg:px-10 lg:py-10 min-[1700px]:max-w-[50rem] min-[1700px]:py-12">
             <div>
-              <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">Onde as ocorrências se concentram em Sorocaba</h1>
+              <h1 className="max-w-[16ch] text-balance font-display text-[clamp(1.9rem,3.6vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em] min-[1700px]:text-[4.5rem]">Onde as ocorrências se concentram em Sorocaba</h1>
               <dl className="mt-5 flex gap-x-8 border-b-[3px] border-mint/70 pb-4 lg:max-w-[30rem]">
-                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">registros da SSP-SP</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)]">{n(meta.n_total)}</dd></div>
-                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">áreas de atenção</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)]">{meta.n_areas}</dd></div>
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">registros da SSP-SP</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)] min-[1700px]:text-[4.75rem]">{n(meta.n_total)}</dd></div>
+                <div className="flex flex-col-reverse"><dt className="rotulo mt-2 text-mint/70">áreas de atenção</dt><dd className="font-display text-[2.4rem] font-bold leading-[0.9] tracking-[-0.02em] sm:text-[clamp(2.6rem,4.4vw,3.6rem)] min-[1700px]:text-[4.75rem]">{meta.n_areas}</dd></div>
               </dl>
-              <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75">
+              <p className="mt-4 max-w-[42ch] text-pretty leading-relaxed text-mint/75 min-[1700px]:text-xl">
                 Furto, roubo e tráfico de {periodo}. Cada área tem um índice de 0 a 100, com o cálculo à vista.
               </p>
               <a href="#video" className="mt-5 hidden items-center lg:inline-flex gap-2.5 rounded-md border border-mint/35 py-2 pl-2 pr-4 text-sm font-medium text-mint transition-colors hover:border-mint/80">
@@ -94,13 +101,20 @@ export default async function Home() {
                 Assistir ao vídeo de apresentação
               </a>
             </div>
-            <figcaption className="hidden space-y-1 lg:block">
-              <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-mint/75">
+            <div className="hidden lg:block">
+            <div className="mb-6 flex items-center gap-4 [@media(max-height:780px)]:hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/qrcode.svg" alt="QR code que abre o site da Bússola Urbana no celular" width={112} height={112} className="h-28 w-28 shrink-0 rounded-md bg-white p-1.5 min-[1700px]:h-36 min-[1700px]:w-36" />
+              <p className="text-mint/80 min-[1700px]:text-lg"><span className="block font-display text-xl font-semibold text-mint min-[1700px]:text-2xl">Use no seu celular</span>Aponte a câmera para o código.</p>
+            </div>
+            <figcaption className="space-y-1">
+              <span className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-mint/75 min-[1700px]:text-base">
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#b91c1c]" />{altas} áreas de alta prioridade</span>
                 <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border-2 border-[#d97706]" />média prioridade</span>
               </span>
-              <span className="block max-w-[52ch] text-xs text-mint/65">Cada ponto é uma ocorrência registrada pela SSP-SP; quanto mais escuro o verde, mais registros ao redor. O pulso repete os registros mês a mês, com destaque para os que estão dentro das áreas de atenção; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
+              <span className="block max-w-[52ch] text-xs text-mint/65 min-[1700px]:text-sm [@media(max-height:960px)]:hidden">Cada ponto é uma ocorrência registrada pela SSP-SP; quanto mais escuro o verde, mais registros ao redor. O pulso repete os registros mês a mês, com destaque para os que estão dentro das áreas de atenção; não é tempo real. Ruas: © colaboradores do OpenStreetMap.</span>
             </figcaption>
+            </div>
           </div>
         </figure>
 
@@ -114,32 +128,6 @@ export default async function Home() {
         </Revela>
         <ComoFunciona etapas={etapas} dados={dados} />
 
-        {/* Fim da explicação: QR para abrir o app no celular (no celular, que já está no site, só os botões) */}
-        <Revela>
-          <div className="r mt-20 flex flex-col items-center gap-8 rounded-lg bg-forest p-8 text-mint sm:flex-row sm:gap-12 sm:p-12">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/qrcode.svg" alt="QR code que abre o site da Bússola Urbana no celular" width={200} height={200} className="hidden h-48 w-48 shrink-0 rounded-md bg-white p-2 sm:block lg:h-56 lg:w-56" />
-            <div>
-              <p className="rotulo text-mint/70">Agora é a sua vez</p>
-              <h3 className="mt-2 font-display text-3xl font-bold lg:text-4xl">Use o app<span className="hidden sm:inline"> no seu celular</span></h3>
-              <p className="mt-3 max-w-[48ch] text-lg leading-relaxed text-mint/80">
-                <span className="hidden sm:inline">Aponte a câmera do celular para o código e escolha uma entrada: </span>
-                <span className="sm:hidden">Escolha uma entrada: </span>
-                gestor, para ver o painel e as áreas, ou em campo, para enviar um relato. Não precisa instalar nada.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/gestor" className="bu-entrada bg-mint text-forest hover:bg-mint-100">
-                  <span className="block font-display text-base font-semibold leading-tight">Entrar como gestor</span>
-                  <span className="block text-xs text-forest/70">Prefeitura e forças de segurança</span>
-                </Link>
-                <Link href="/cidadao" className="bu-entrada border border-mint/35 text-mint hover:border-mint/80">
-                  <span className="block font-display text-base font-semibold leading-tight">Entrar em campo</span>
-                  <span className="block text-xs text-mint/65">Policiais, fiscais e cidadãos</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Revela>
       </section>
 
       {/* As duas entradas, com as telas reais do app */}
@@ -150,6 +138,20 @@ export default async function Home() {
             <p className="r mt-4 max-w-[56ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>Quem está na rua aponta o problema. Quem decide vê o problema no mapa, ao lado do índice da área, e transforma em vistoria e ordem de serviço.</p>
           </Revela>
           <DemoTelas />
+            {/* Depois de ver as telas: QR para abrir o app no celular (só no computador: no celular a pessoa já está no site e os botões ficam logo acima) */}
+            <Revela>
+              <div className="r mt-20 hidden items-center gap-12 rounded-lg bg-forest-800 p-12 text-mint ring-1 ring-mint/15 sm:flex">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/qrcode.svg" alt="QR code que abre o site da Bússola Urbana no celular" width={200} height={200} className="h-48 w-48 shrink-0 rounded-md bg-white p-2 lg:h-56 lg:w-56" />
+                <div>
+                  <p className="rotulo text-mint/70">Agora é a sua vez</p>
+                  <h3 className="mt-2 font-display text-3xl font-bold lg:text-4xl">Use o app no seu celular</h3>
+                  <p className="mt-3 max-w-[48ch] text-lg leading-relaxed text-mint/80">
+                    Aponte a câmera do celular para o código e escolha uma entrada: gestor, para ver o painel e as áreas, ou em campo, para enviar um relato. Não precisa instalar nada.
+                  </p>
+                </div>
+              </div>
+            </Revela>
         </div>
       </section>
 
@@ -184,7 +186,7 @@ export default async function Home() {
           <Revela>
             <h2 className="r max-w-[14ch] font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold leading-[1.04] tracking-[-0.015em]">A equipe apresenta a Bússola</h2>
             <p className="r mt-4 max-w-[40ch] text-lg leading-relaxed text-mint/70" style={{ ["--i" as string]: 1 }}>O vídeo pitch do projeto: o problema, a solução e como chegamos até aqui.</p>
-            <a href="https://www.youtube.com/watch?v=oJHUoOpUxeE" target="_blank" rel="noopener noreferrer" className="r mt-6 inline-block text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
+            <a href="https://www.youtube.com/watch?v=oJHUoOpUxeE" target="_blank" rel="noopener noreferrer" className="r mt-4 inline-flex py-3 text-sm text-mint/70 underline decoration-mint/40 underline-offset-4 hover:text-mint hover:decoration-mint" style={{ ["--i" as string]: 2 }}>Abrir no YouTube</a>
           </Revela>
           <Revela>
             <div className="r r-dir"><Video id="oJHUoOpUxeE" titulo="Bússola Urbana, pitch UPX I, Facens 2026" /></div>

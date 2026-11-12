@@ -28,9 +28,9 @@ export default function Letreiro({ ocorrencias, areas, ano }: { ocorrencias: Oc[
 
   return (
     <div className="bu-letreiro relative flex items-stretch border-t border-mint/15 bg-forest-800 text-sm text-mint/80">
-      <div className="z-10 flex shrink-0 items-center gap-2 bg-mint px-4 py-3 rotulo text-forest">
+      <div className="z-10 flex shrink-0 items-center gap-2 bg-mint px-3 py-3 rotulo text-forest sm:px-4">
         <i className="h-2 w-2 rounded-full bg-[#b91c1c]" />
-        Registros SSP-SP
+        <span className="sm:hidden">SSP</span><span className="hidden sm:inline">Registros SSP-SP</span>
       </div>
       <div className="relative flex-1 overflow-hidden outline-none" role="region" tabIndex={0} aria-label="Ocorrências registradas nas áreas de atenção, em ordem cronológica. Toque para pausar.">
         <div className="bu-letreiro-trilho flex w-max py-3" style={{ animationDuration: `${itens.length * 4}s` }}>
